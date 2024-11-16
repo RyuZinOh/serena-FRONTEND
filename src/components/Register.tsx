@@ -9,8 +9,10 @@ import {
   FaLock,
   FaHome,
   FaQuestionCircle,
-} from "react-icons/fa"; // React Icons
+} from "react-icons/fa";
+import { Link } from "react-router-dom";
 import "../css/register.css";
+
 interface RegisterFormInputs {
   name: string;
   email: string;
@@ -29,11 +31,7 @@ const Register: React.FC = () => {
 
   const onSubmit: SubmitHandler<RegisterFormInputs> = async (data) => {
     try {
-      const userData = {
-        ...data,
-        role: 0, // default role as user (0)
-      };
-
+      const userData = { ...data, role: 0 };
       const response = await apiClient.post("/user/register", userData);
       alert(response.data.message || "Registration successful!");
     } catch (error) {
@@ -144,6 +142,12 @@ const Register: React.FC = () => {
           Register
         </button>
       </form>
+
+      <div className="form-footer">
+        <p>
+          Already have an account? <Link to="/login">Login here</Link>
+        </p>
+      </div>
     </div>
   );
 };
