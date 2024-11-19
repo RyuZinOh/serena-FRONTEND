@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import apiClient from "../api/apiClient";
 import axios from "axios";
 import { FaEnvelope, FaLock } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../css/login.css";
 
 interface LoginFormInputs {
@@ -17,18 +17,21 @@ const Login: React.FC = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFormInputs>();
+  const [loginError, setLoginError] = useState<string | null>(null); // State for error message
+  const navigate = useNavigate(); // Navigation hook for manual redirects
 
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     try {
       const response = await apiClient.post("/user/login", data);
       localStorage.setItem("token", response.data.token);
       alert("Login successful!");
+      navigate("/"); // Navigate to the home page or dashboard after successful login
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        alert(error.response?.data?.message || "Invalid credentials");
+        setLoginError(error.response?.data?.message || "Invalid credentials");
       } else {
         console.error(error);
-        alert("An unexpected error occurred");
+        setLoginError("An unexpected error occurred");
       }
     }
   };
@@ -77,6 +80,18 @@ const Login: React.FC = () => {
           Login
         </button>
       </form>
+
+      {loginError && ( // Show error message and Forgot Password link
+        <div className="error-container">
+          <p className="error-message">{loginError}</p>
+          <p>
+            Forgot your password?{" "}
+            <Link to="/forgetpass" className="forgot-link">
+              Reset it here
+            </Link>
+          </p>
+        </div>
+      )}
 
       <div className="form-footer">
         <p>
