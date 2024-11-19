@@ -216,3 +216,22 @@ h2 {
     font-size: 16px;
   }
 }
+.error-container {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.error-container .error-message {
+  color: #f44336;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.forgot-link {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+}

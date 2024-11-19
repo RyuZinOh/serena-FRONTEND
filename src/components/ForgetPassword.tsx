@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import apiClient from "../api/apiClient";
 import axios from "axios";
 import { FaEnvelope, FaQuestionCircle, FaLock } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../css/forget-pass.css";
 
 interface ForgotPasswordInputs {
@@ -18,11 +18,20 @@ const ForgotPassword: React.FC = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<ForgotPasswordInputs>();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate("/user-dashboard"); // Redirect to user dashboard if logged in
+    }
+  }, [navigate]);
 
   const onSubmit: SubmitHandler<ForgotPasswordInputs> = async (data) => {
     try {
       const response = await apiClient.post("/user/forgot-password", data);
       alert(response.data.message || "Password updated successfully!");
+      navigate("/login"); // Redirect to login page after successful password reset
     } catch (error) {
       if (axios.isAxiosError(error)) {
         alert(error.response?.data?.message || "Something went wrong");

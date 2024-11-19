@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import apiClient from "../api/apiClient";
 import axios from "axios";
@@ -10,7 +10,7 @@ import {
   FaHome,
   FaQuestionCircle,
 } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../css/register.css";
 
 interface RegisterFormInputs {
@@ -28,12 +28,21 @@ const Register: React.FC = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<RegisterFormInputs>();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate("/user-dashboard"); // Redirect if already logged in
+    }
+  }, [navigate]);
 
   const onSubmit: SubmitHandler<RegisterFormInputs> = async (data) => {
     try {
       const userData = { ...data, role: 0 };
       const response = await apiClient.post("/user/register", userData);
       alert(response.data.message || "Registration successful!");
+      navigate("/login"); // Redirect to login page after registration
     } catch (error) {
       if (axios.isAxiosError(error)) {
         alert(error.response?.data?.message || "Something went wrong");

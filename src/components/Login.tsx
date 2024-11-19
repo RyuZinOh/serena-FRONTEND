@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import apiClient from "../api/apiClient";
 import axios from "axios";
@@ -17,22 +17,44 @@ const Login: React.FC = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFormInputs>();
-  const [loginError, setLoginError] = useState<string | null>(null); // State for error message
-  const navigate = useNavigate(); // Navigation hook for manual redirects
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+
+    if (token) {
+      if (role === "1") {
+        navigate("/admin-dashboard");
+      } else if (role === "0") {
+        navigate("/user-dashboard");
+      }
+    }
+  }, [navigate]);
 
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     try {
       const response = await apiClient.post("/user/login", data);
-      localStorage.setItem("token", response.data.token);
+      const { token, user } = response.data;
+      localStorage.setItem("token", token);
+      localStorage.setItem("role", user.role);
+
       alert("Login successful!");
-      navigate("/"); // Navigate to the home page or dashboard after successful login
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        setLoginError(error.response?.data?.message || "Invalid credentials");
+
+      if (user.role === 1) {
+        navigate("/admin-dashboard");
+      } else if (user.role === 0) {
+        navigate("/user-dashboard");
       } else {
-        console.error(error);
-        setLoginError("An unexpected error occurred");
+        setLoginError("Unknown role. Please contact support.");
       }
+    } catch (error) {
+      setLoginError(
+        axios.isAxiosError(error)
+          ? error.response?.data?.message || "Invalid credentials"
+          : "An unexpected error occurred"
+      );
     }
   };
 
@@ -81,7 +103,7 @@ const Login: React.FC = () => {
         </button>
       </form>
 
-      {loginError && ( // Show error message and Forgot Password link
+      {loginError && (
         <div className="error-container">
           <p className="error-message">{loginError}</p>
           <p>
