@@ -1,9 +1,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { FaExclamationTriangle } from "react-icons/fa";
+import { FaTools } from "react-icons/fa";
 import Layout from "../components/Layout/Layout";
 
-const Pnf: React.FC = () => {
+const Construction: React.FC = () => {
   const navigate = useNavigate();
 
   const handleBackHome = () => navigate("/");
@@ -16,15 +16,14 @@ const Pnf: React.FC = () => {
                    transform transition-transform duration-700 ease-out scale-95 hover:scale-100"
         >
           <div className="mb-6">
-            {/* Animated Icon with bounce effect */}
             <div className="text-6xl mx-auto mb-4 animate-bounce">
-              <FaExclamationTriangle className="text-yellow-500" />
+              <FaTools className="text-yellow-500" />
             </div>
             <h1 className="text-3xl sm:text-4xl font-semibold mb-4 text-black animate-fadeIn">
-              Oops! Page Not Found
+              Under Construction
             </h1>
             <p className="text-lg mb-6 text-gray-800">
-              Sorry, we couldn’t find the page you were looking for.
+              We're working hard to bring you this page. Stay tuned!
             </p>
             <button
               onClick={handleBackHome}
@@ -39,4 +38,4 @@ const Pnf: React.FC = () => {
   );
 };
 
-export default Pnf;
+export default Construction;
