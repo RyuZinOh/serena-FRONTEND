@@ -1,13 +1,20 @@
 import React from "react";
-import Layout from "./components/Layout/Layout";
+import { Routes, Route } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import AboutPage from "./pages/AboutPage";
+import PolicyPage from "./pages/PolicyPage";
+import ContactPage from "./pages/ContactPage";
+import Pnf from "./pages/Pnf";
 
 const App: React.FC = () => {
   return (
-    <div className="min-h-screen flex flex-col">
-      <Layout>
-        <h1>Serena</h1>
-      </Layout>
-    </div>
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/about" element={<AboutPage />} />
+      <Route path="/policy" element={<PolicyPage />} />
+      <Route path="/contact" element={<ContactPage />} />
+      <Route path="*" element={<Pnf />} />
+    </Routes>
   );
 };
 
