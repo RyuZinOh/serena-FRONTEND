@@ -1,11 +1,13 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Layout from "./components/Layout/Layout";
 
 const App: React.FC = () => {
   return (
-    <Router>
-      <Routes></Routes>
-    </Router>
+    <div className="min-h-screen flex flex-col">
+      <Layout>
+        <h1>Serena</h1>
+      </Layout>
+    </div>
   );
 };
 
