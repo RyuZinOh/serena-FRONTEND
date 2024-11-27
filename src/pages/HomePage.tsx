@@ -5,9 +5,9 @@ const HomePage: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const images = [
-    "/assets/pikachu.png",
-    "/assets/battleTestament.jpg",
-    "/assets/pokemons.png",
+    "https://raw.githubusercontent.com/RyuZinOh/static-assets/main/serena-carousal/pikachu.png",
+    "https://raw.githubusercontent.com/RyuZinOh/static-assets/main/serena-carousal/battleTestament.jpg",
+    "https://raw.githubusercontent.com/RyuZinOh/static-assets/main/serena-carousal/pokemons.png",
   ];
 
   const slideTitles = [
@@ -16,17 +16,11 @@ const HomePage: React.FC = () => {
     "Explore the World of Pokémon",
   ];
 
-  const prevSlide = () => {
+  const prevSlide = () =>
     setCurrentSlide((prev) => (prev === 0 ? images.length - 1 : prev - 1));
-  };
-
-  const nextSlide = () => {
+  const nextSlide = () =>
     setCurrentSlide((prev) => (prev === images.length - 1 ? 0 : prev + 1));
-  };
-
-  const goToSlide = (index: number) => {
-    setCurrentSlide(index);
-  };
+  const goToSlide = (index: number) => setCurrentSlide(index);
 
   return (
     <div>
@@ -55,20 +49,20 @@ const HomePage: React.FC = () => {
               </div>
             ))}
           </div>
-
           <button
             onClick={prevSlide}
             className="absolute top-1/2 left-4 transform -translate-y-1/2 text-white bg-black bg-opacity-50 p-3 rounded-full shadow-lg hover:bg-opacity-75 transition duration-300"
+            aria-label="Previous slide"
           >
             &#10094;
           </button>
           <button
             onClick={nextSlide}
             className="absolute top-1/2 right-4 transform -translate-y-1/2 text-white bg-black bg-opacity-50 p-3 rounded-full shadow-lg hover:bg-opacity-75 transition duration-300"
+            aria-label="Next slide"
           >
             &#10095;
           </button>
-
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-4">
             {images.map((_, index) => (
               <div
