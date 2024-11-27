@@ -3,7 +3,7 @@ import { FaUser, FaLock } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import Layout from "../../components/Layout/Layout";
 import { Link, useNavigate } from "react-router-dom";
-import useAuth from "../../context/useAuth";
+import useAuth from "../../context/UseAuth";
 import { toast } from "react-toastify";
 import axios from "axios";
 
@@ -13,7 +13,11 @@ interface LoginFormInputs {
 }
 
 const Login: React.FC = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginFormInputs>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormInputs>();
   const [auth, setAuth] = useAuth();
   const navigate = useNavigate();
 
@@ -55,7 +59,9 @@ const Login: React.FC = () => {
     >
       <div className="flex justify-center items-center min-h-screen bg-gray-50 py-6 px-4 sm:px-6 lg:px-8">
         <div className="w-full max-w-md space-y-8 bg-white bg-opacity-50 backdrop-blur-lg p-8 rounded-xl shadow-lg">
-          <h2 className="text-3xl font-extrabold text-gray-900 text-center">Login</h2>
+          <h2 className="text-3xl font-extrabold text-gray-900 text-center">
+            Login
+          </h2>
           <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
             <div className="space-y-1">
               <div className="relative">
@@ -67,7 +73,9 @@ const Login: React.FC = () => {
                   className="appearance-none block w-full px-10 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-transparent"
                 />
               </div>
-              {errors.email && <p className="text-sm text-red-600">{errors.email.message}</p>}
+              {errors.email && (
+                <p className="text-sm text-red-600">{errors.email.message}</p>
+              )}
             </div>
             <div className="space-y-1">
               <div className="relative">
@@ -77,12 +85,19 @@ const Login: React.FC = () => {
                   placeholder="Password"
                   {...register("password", {
                     required: "Password is required",
-                    minLength: { value: 6, message: "Password must be at least 6 characters" },
+                    minLength: {
+                      value: 6,
+                      message: "Password must be at least 6 characters",
+                    },
                   })}
                   className="appearance-none block w-full px-10 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-transparent"
                 />
               </div>
-              {errors.password && <p className="text-sm text-red-600">{errors.password.message}</p>}
+              {errors.password && (
+                <p className="text-sm text-red-600">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
             <button
               type="submit"
