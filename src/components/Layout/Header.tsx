@@ -10,9 +10,8 @@ const Header: React.FC = () => {
   const username = auth?.user?.name || "User";
 
   useEffect(() => {
-    const storedAuth = localStorage.getItem("auth");
-    if (storedAuth) setAuth(JSON.parse(storedAuth));
-  }, [setAuth]);
+    console.log("Header: Current Auth state", auth);
+  }, [auth]);
 
   const handleLogout = () => {
     localStorage.removeItem("auth");
