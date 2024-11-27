@@ -4,7 +4,13 @@ import { FaPaw, FaExchangeAlt, FaDumbbell } from "react-icons/fa"; // Pokémon r
 
 const AboutPage: React.FC = () => {
   return (
-    <Layout>
+    <Layout
+      title="About Us - Serena"
+      description="Learn more about Serena, the ultimate platform for Pokémon trainers to battle, trade, and explore!"
+      author="Serena Team"
+      keywords="Pokemon, Battle, Trade, Serena"
+      viewport="width=device-width, initial-scale=1.0"
+    >
       <div className="flex justify-center items-center min-h-screen bg-gray-100">
         <div className="bg-white bg-opacity-90 backdrop-blur-lg p-8 rounded-xl shadow-lg w-full max-w-2xl">
           <div className="text-center mb-6">

@@ -3,7 +3,13 @@ import Layout from "../components/Layout/Layout";
 
 const PolicyPage: React.FC = () => {
   return (
-    <Layout>
+    <Layout
+      title="Privacy Policy - Serena"
+      description="Learn about our privacy policy and how we protect your personal information."
+      author="Serena Team"
+      keywords="Privacy Policy, Data Protection, Cookies, Serena"
+      viewport="width=device-width, initial-scale=1.0"
+    >
       <div className="flex justify-center items-center min-h-screen bg-gray-100 py-8">
         <div className="bg-white p-8 rounded-xl shadow-lg max-w-4xl w-full">
           <div className="text-center mb-6">

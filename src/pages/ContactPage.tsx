@@ -4,7 +4,13 @@ import { FaEnvelope, FaPhoneAlt, FaLocationArrow } from "react-icons/fa"; // Con
 
 const ContactPage: React.FC = () => {
   return (
-    <Layout>
+    <Layout
+      title="Contact Us - Serena"
+      description="Get in touch with the Serena team for questions, feedback, or assistance. We're here to help!"
+      author="Serena Team"
+      keywords="Contact, Support, Feedback, Serena"
+      viewport="width=device-width, initial-scale=1.0"
+    >
       <div className="flex justify-center items-center min-h-screen bg-gray-100 py-6">
         <div className="bg-white p-6 rounded-xl shadow-lg max-w-xl w-full">
           <div className="text-center mb-4">

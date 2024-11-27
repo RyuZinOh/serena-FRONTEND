@@ -9,7 +9,13 @@ const Pnf: React.FC = () => {
   const handleBackHome = () => navigate("/");
 
   return (
-    <Layout>
+    <Layout
+      title="Page Not Found - Serena"
+      description="Oops! We couldn't find the page you're looking for. Go back to the homepage."
+      author="Serena Team"
+      keywords="404, Page Not Found, Serena"
+      viewport="width=device-width, initial-scale=1.0"
+    >
       <div className="min-h-screen flex justify-center items-center bg-white text-black">
         <div
           className="p-8 sm:p-10 rounded-3xl shadow-lg w-full max-w-lg text-center bg-gray-100 

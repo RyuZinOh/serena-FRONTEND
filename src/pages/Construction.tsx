@@ -9,7 +9,13 @@ const Construction: React.FC = () => {
   const handleBackHome = () => navigate("/");
 
   return (
-    <Layout>
+    <Layout
+      title="Page Under Construction - Serena"
+      description="This page is currently under construction. We're working hard to bring you an amazing experience. Stay tuned!"
+      author="Serena Team"
+      keywords="Construction, Coming Soon, Serena"
+      viewport="width=device-width, initial-scale=1.0"
+    >
       <div className="min-h-screen flex justify-center items-center bg-white text-black">
         <div
           className="p-8 sm:p-10 rounded-3xl shadow-lg w-full max-w-lg text-center bg-gray-100 

@@ -7,6 +7,9 @@ export default {
       animation: {
         fadeIn: "fadeIn 1s ease-in-out",
       },
+      colors: {
+        golden: "#FFD700",
+      },
       keyframes: {
         fadeIn: {
           "0%": { opacity: 0 },

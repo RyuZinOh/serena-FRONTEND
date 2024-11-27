@@ -4,32 +4,54 @@ import { NavLink } from "react-router-dom";
 const Header: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  // Toggle dropdown visibility
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
   return (
-    <header className="bg-gray-900 text-white py-4 px-6">
+    <header className="bg-black text-white py-6 px-6 relative z-20">
       <div className="flex justify-between items-center">
-        {/* Left-side navigation links */}
-        <div className="flex space-x-6">
-          <NavLink to="/" className="hover:text-gray-400">
+        <div className="flex space-x-8">
+          <NavLink
+            to="/"
+            className={({ isActive }) =>
+              isActive ? "text-golden text-lg" : "text-lg hover:text-gray-400"
+            }
+          >
             Home
           </NavLink>
-          <NavLink to="/battlezone" className="hover:text-gray-400">
+          <NavLink
+            to="/battlezone"
+            className={({ isActive }) =>
+              isActive ? "text-golden text-lg" : "text-lg hover:text-gray-400"
+            }
+          >
             Battlezone
           </NavLink>
-          <NavLink to="/commandsector" className="hover:text-gray-400">
+          <NavLink
+            to="/commandsector"
+            className={({ isActive }) =>
+              isActive ? "text-golden text-lg" : "text-lg hover:text-gray-400"
+            }
+          >
             Commandsector
           </NavLink>
-          <NavLink to="/incensewar" className="hover:text-gray-400">
+          <NavLink
+            to="/incensewar"
+            className={({ isActive }) =>
+              isActive ? "text-golden text-lg" : "text-lg hover:text-gray-400"
+            }
+          >
             Incensewar
           </NavLink>
-          <NavLink to="/market" className="hover:text-gray-400">
+          <NavLink
+            to="/market"
+            className={({ isActive }) =>
+              isActive ? "text-golden text-lg" : "text-lg hover:text-gray-400"
+            }
+          >
             Market
           </NavLink>
         </div>
 
-        {/* Right-side user icon with dropdown */}
         <div className="relative">
           <div
             onClick={toggleDropdown}
@@ -43,9 +65,8 @@ const Header: React.FC = () => {
             <span>Username</span>
           </div>
 
-          {/* Dropdown menu */}
           {isDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-gray-800 text-white rounded-lg shadow-lg">
+            <div className="absolute right-0 mt-2 w-48 bg-gray-800 text-white rounded-lg shadow-lg z-30">
               <ul>
                 <li className="px-4 py-2 hover:bg-gray-700 cursor-pointer">
                   Username
