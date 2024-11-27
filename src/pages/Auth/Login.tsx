@@ -18,43 +18,37 @@ const Login: React.FC = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFormInputs>();
-  const [auth, setAuth] = useAuth();
+  const [, setAuth] = useAuth();
   const navigate = useNavigate();
 
   const onSubmit = async (data: LoginFormInputs) => {
     try {
-      // Using the API URL from the environment variable
       const response = await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}/user/login`,
         data
       );
-
       const result = response.data;
-
-      // Save auth data to context and local storage
-      setAuth({
-        user: result.user,
-        token: result.token,
-      });
+      setAuth({ user: result.user, token: result.token });
       localStorage.setItem("auth", JSON.stringify(result));
-
       toast.success("Login successful!");
-      navigate("/"); // Navigate to the home page
+      navigate("/");
     } catch (error) {
-      toast.error(
-        axios.isAxiosError(error)
-          ? error.response?.data?.message || "Invalid credentials"
-          : "An unexpected error occurred"
-      );
+      if (axios.isAxiosError(error)) {
+        toast.error(
+          error.response?.data?.message || "An unexpected error occurred"
+        );
+      } else {
+        toast.error("An unexpected error occurred");
+      }
     }
   };
 
   return (
     <Layout
       title="Login - Serena"
-      description="Login to Serena platform to access your account and start battling, trading, and exploring."
+      description="Login to Serena platform"
       author="Serena Team"
-      keywords="Login, Serena, Pokemon, Battle, Trade"
+      keywords="Login, Serena"
       viewport="width=device-width, initial-scale=1.0"
     >
       <div className="flex justify-center items-center min-h-screen bg-gray-50 py-6 px-4 sm:px-6 lg:px-8">
