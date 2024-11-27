@@ -3,7 +3,7 @@ import { FaUser, FaLock } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import Layout from "../../components/Layout/Layout";
 import { Link, useNavigate } from "react-router-dom";
-import useAuth from "../../context/UseAuth";
+import useAuth from "../../context/useAuth";
 import { toast } from "react-toastify";
 import axios from "axios";
 

@@ -1,7 +1,13 @@
 import React, { useState, useEffect, createContext, ReactNode } from "react";
 
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
 interface AuthState {
-  user: { id: string; name: string; email: string } | null;
+  user: User | null;
   token: string | null;
 }
 
@@ -18,7 +24,12 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     const storedAuth = localStorage.getItem("auth");
-    if (storedAuth) setAuth(JSON.parse(storedAuth));
+    if (storedAuth) {
+      const parsedAuth = JSON.parse(storedAuth);
+      if (parsedAuth?.user && parsedAuth?.token) {
+        setAuth(parsedAuth);
+      }
+    }
   }, []);
 
   return (
@@ -28,4 +39,5 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   );
 };
 
-export { AuthProvider, AuthContext };
+export default AuthProvider; // Default export
+export { AuthContext }; // Named export

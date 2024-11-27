@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Layout from "../components/Layout/Layout";
-import useAuth from "../context/UseAuth";
+import useAuth from "../context/useAuth";
 
 const HomePage: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
