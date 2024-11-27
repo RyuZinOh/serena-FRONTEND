@@ -4,8 +4,12 @@ import HomePage from "./pages/HomePage";
 import AboutPage from "./pages/AboutPage";
 import PolicyPage from "./pages/PolicyPage";
 import ContactPage from "./pages/ContactPage";
-import Pnf from "./pages/Pnf";
+import Pnf from "./pages/Pnf"; // 404 page
 import Construction from "./pages/Construction";
+
+const NoMatch = () => {
+  return <Pnf />;
+};
 
 const App: React.FC = () => {
   return (
@@ -18,7 +22,7 @@ const App: React.FC = () => {
       <Route path="/battlezone" element={<Construction />} />
       <Route path="/incensewar" element={<Construction />} />
       <Route path="/market" element={<Construction />} />
-      <Route path="*" element={<Pnf />} />
+      <Route path="*" element={<NoMatch />} />
     </Routes>
   );
 };
