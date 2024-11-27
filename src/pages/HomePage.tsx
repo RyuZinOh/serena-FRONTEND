@@ -5,9 +5,9 @@ const HomePage: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const images = [
-    "../assets/battleTestament.jpg",
-    "../assets/pikachu.png",
-    "../assets/pokemons.png",
+    "../../assets/pikachu.png",
+    "../../assets/battleTestament.jpg",
+    "../../assets/pokemons.png",
   ];
 
   const slideTitles = [
