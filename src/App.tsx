@@ -11,6 +11,8 @@ import Login from "./pages/Auth/Login";
 // import ForgotPassword from "./pages/Auth/ForgetPassword";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
+import Dashboard from "./pages/user/Dashboard";
+import PrivateRoute from "./components/routes/Private";
 const NoMatch = () => {
   return <Pnf />;
 };
@@ -21,6 +23,10 @@ const App: React.FC = () => {
       <ToastContainer />
       <Routes>
         <Route path="/" element={<HomePage />} />
+        {/* nested private route */}
+        <Route path="/dashboard" element={<PrivateRoute />}>
+          <Route path="" element={<Dashboard />} />
+        </Route>
         <Route path="/about" element={<AboutPage />} />
         <Route path="/policy" element={<PolicyPage />} />
         <Route path="/contact" element={<ContactPage />} />
