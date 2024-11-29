@@ -40,7 +40,7 @@ const HomePage: React.FC = () => {
       keywords="Pokemon, Battle, Trade, Catch, Serena"
       viewport="width=device-width, initial-scale=1.0"
     >
-      <div className="relative w-full h-[1080px] overflow-hidden">
+      <div className="relative w-full h-[400px] md:h-[1080px] overflow-hidden z-0">
         <div
           className="flex transition-transform duration-500 ease-in-out"
           style={{ transform: `translateX(-${currentSlide * 100}%)` }}
@@ -50,17 +50,14 @@ const HomePage: React.FC = () => {
               key={index}
               className="w-full flex-shrink-0 relative group overflow-hidden"
             >
-              {/* Image with zoom-in effect on hover */}
               <img
                 src={image}
                 alt={`Slide ${index + 1}: ${slideTitles[index]}`}
                 className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500 ease-in-out"
               />
-              {/* Bottom gradient effect */}
               <div className="absolute bottom-0 left-0 w-full h-2/3 bg-gradient-to-t from-black/80 to-transparent"></div>
-              {/* Slide title with yellow color and transition for morphing effect */}
               <div
-                className={`absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white font-bold text-3xl md:text-4xl text-shadow-lg transition-all duration-700 ease-in-out ${
+                className={`absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white font-bold text-2xl md:text-4xl text-shadow-lg transition-all duration-700 ease-in-out ${
                   currentSlide === index
                     ? "text-yellow-400 scale-110 opacity-100 animate-morphingText"
                     : "text-white scale-100 opacity-80"
@@ -72,23 +69,21 @@ const HomePage: React.FC = () => {
           ))}
         </div>
 
-        {/* Navigation Buttons */}
         <button
           onClick={prevSlide}
-          className="absolute top-1/2 left-4 transform -translate-y-1/2 text-white bg-black bg-opacity-50 p-4 rounded-full shadow-lg hover:bg-opacity-75 transition duration-300"
+          className="absolute top-1/2 left-4 transform -translate-y-1/2 text-white bg-black bg-opacity-50 p-2 md:p-4 rounded-full shadow-lg hover:bg-opacity-75 transition duration-300"
           aria-label="Previous slide"
         >
           &#10094;
         </button>
         <button
           onClick={nextSlide}
-          className="absolute top-1/2 right-4 transform -translate-y-1/2 text-white bg-black bg-opacity-50 p-4 rounded-full shadow-lg hover:bg-opacity-75 transition duration-300"
+          className="absolute top-1/2 right-4 transform -translate-y-1/2 text-white bg-black bg-opacity-50 p-2 md:p-4 rounded-full shadow-lg hover:bg-opacity-75 transition duration-300"
           aria-label="Next slide"
         >
           &#10095;
         </button>
 
-        {/* Dots Navigation */}
         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-4">
           {images.map((_, index) => (
             <div
@@ -102,11 +97,11 @@ const HomePage: React.FC = () => {
         </div>
       </div>
 
-      {/* Auth Debug Info (Optional) */}
-      <div className="p-4 bg-gray-50 mt-4 rounded-md shadow">
-        <h3 className="font-semibold text-lg mb-2">Auth Debug Info</h3>
-        <pre className="text-sm bg-gray-200 p-2 rounded">
-          {JSON.stringify(auth, null, 4)}
+      <div className="p-2 bg-gray-50 mt-2 rounded-md shadow-md max-h-40 overflow-hidden z-10">
+        <h3 className="font-semibold text-sm mb-1">Auth Debug Info</h3>
+        <pre className="text-xs bg-gray-200 p-2 rounded overflow-ellipsis overflow-hidden">
+          {JSON.stringify(auth).slice(0, 150)}
+          {JSON.stringify(auth).length > 150 ? "..." : ""}
         </pre>
       </div>
     </Layout>
