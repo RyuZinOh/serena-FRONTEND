@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
-import { FaGithub, FaTwitter, FaFacebook, FaInstagram } from "react-icons/fa";
+import { FaGithub, FaFacebook, FaInstagram } from "react-icons/fa";
+import { RiTwitterXFill } from "react-icons/ri";
 
 const Footer: React.FC = () => {
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
@@ -149,15 +150,15 @@ const Footer: React.FC = () => {
               <FaGithub size={24} />
             </a>
             <a
-              href="https://twitter.com/serena"
+              href="https://x.com/yoyuehappy"
               target="_blank"
               rel="noopener noreferrer"
               className="text-white hover:text-gray-400"
             >
-              <FaTwitter size={24} />
+              <RiTwitterXFill size={24} />
             </a>
             <a
-              href="https://facebook.com/serena"
+              href="https://www.facebook.com/safal.lama.726"
               target="_blank"
               rel="noopener noreferrer"
               className="text-white hover:text-gray-400"
@@ -165,7 +166,7 @@ const Footer: React.FC = () => {
               <FaFacebook size={24} />
             </a>
             <a
-              href="https://instagram.com/serena"
+              href="https://www.instagram.com/happillli_/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-white hover:text-gray-400"

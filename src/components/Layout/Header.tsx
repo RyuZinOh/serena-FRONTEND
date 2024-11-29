@@ -34,7 +34,7 @@ const Header: React.FC = () => {
       <div className="bg-white-900 text-white py-2 z-50">
         <div className="container mx-auto px-4 flex justify-center items-center text-sm">
           <img
-            src="/src/assets/serena.png"
+            src="/assets/serena.png"
             alt="Site Logo"
             className="h-10 w-auto sm:h-12"
           />
