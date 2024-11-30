@@ -6,17 +6,26 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const PrivateRoute = () => {
-  const [ok, setOk] = useState(false);
-  const [auth] = useAuth();
+  const [ok, setOk] = useState<boolean | null>(null);
+  const [auth] = useAuth(); 
   const navigate = useNavigate();
 
   useEffect(() => {
-    const authCheck = async () => {
+    const checkAuthToken = async () => {
+      const savedAuth = JSON.parse(localStorage.getItem("auth") || "{}");
+      const token = savedAuth?.token || auth?.token;
+
+      if (!token) {
+        toast.info("No authentication token found. Redirecting to login.");
+        navigate("/login");
+        return;
+      }
+
       try {
         const res = await axios.get(
           `${import.meta.env.VITE_API_BASE_URL}/auth/user-auth`,
           {
-            headers: { Authorization: `Bearer ${auth?.token}` },
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
         if (res.data.ok) {
@@ -24,6 +33,7 @@ const PrivateRoute = () => {
         } else {
           setOk(false);
           toast.error("Authentication failed. Please login again.");
+          navigate("/login");
         }
       } catch (err: unknown) {
         if (axios.isAxiosError(err) && err.response) {
@@ -36,19 +46,15 @@ const PrivateRoute = () => {
           toast.error("Failed to connect to the backend.");
         }
         setOk(false);
+        navigate("/login");
       }
     };
 
-    if (auth?.token) {
-      authCheck();
-    } else {
-      toast.info("No authentication token found. Redirect you to login");
-      navigate("/login");
-    }
+    checkAuthToken();
   }, [auth?.token, navigate]);
 
-  if (!ok) {
-    return null;
+  if (ok === null) {
+    return null; 
   }
 
   return <Outlet />;

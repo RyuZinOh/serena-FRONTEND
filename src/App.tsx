@@ -13,6 +13,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import Dashboard from "./pages/user/Dashboard";
 import PrivateRoute from "./components/routes/Private";
+import GuptaRoute from "./components/routes/GuptaRoute";
+import ForgotPassword from "./pages/Auth/ForgetPassword";
 const NoMatch = () => {
   return <Pnf />;
 };
@@ -27,6 +29,13 @@ const App: React.FC = () => {
         <Route path="/dashboard" element={<PrivateRoute />}>
           <Route path="" element={<Dashboard />} />
         </Route>
+        {/* 
+        new guptaroute for login.auth/fpa */}
+        <Route element={<GuptaRoute />}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+        </Route>
         <Route path="/about" element={<AboutPage />} />
         <Route path="/policy" element={<PolicyPage />} />
         <Route path="/contact" element={<ContactPage />} />
@@ -34,8 +43,6 @@ const App: React.FC = () => {
         <Route path="/battlezone" element={<Construction />} />
         <Route path="/incensewar" element={<Construction />} />
         <Route path="/market" element={<Construction />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
         {/* <Route path="/forget-password" element={<ForgotPassword />} /> */}
         <Route path="*" element={<NoMatch />} />
       </Routes>

@@ -75,7 +75,7 @@ const Register: React.FC = () => {
                   type="text"
                   placeholder="Full Name"
                   {...register("name", { required: "Name is required" })}
-                  className="appearance-none block w-full px-10 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-transparent"
+                  className="appearance-none block w-full px-10 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-black sm:text-sm bg-transparent"
                 />
               </div>
               {errors.name && (
@@ -89,7 +89,7 @@ const Register: React.FC = () => {
                   type="email"
                   placeholder="Email Address"
                   {...register("email", { required: "Email is required" })}
-                  className="appearance-none block w-full px-10 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-transparent"
+                  className="appearance-none block w-full px-10 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-black sm:text-sm bg-transparent"
                 />
               </div>
               {errors.email && (
@@ -109,7 +109,7 @@ const Register: React.FC = () => {
                       message: "Password must be at least 6 characters",
                     },
                   })}
-                  className="appearance-none block w-full px-10 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-transparent"
+                  className="appearance-none block w-full px-10 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-black sm:text-sm bg-transparent"
                 />
               </div>
               {errors.password && (
@@ -127,7 +127,7 @@ const Register: React.FC = () => {
                   {...register("phone", {
                     required: "Phone number is required",
                   })}
-                  className="appearance-none block w-full px-10 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-transparent"
+                  className="appearance-none block w-full px-10 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-black sm:text-sm bg-transparent"
                 />
               </div>
               {errors.phone && (
@@ -139,9 +139,9 @@ const Register: React.FC = () => {
                 <FaHome className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Address (Optional)"
+                  placeholder="Address"
                   {...register("address")}
-                  className="appearance-none block w-full px-10 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-transparent"
+                  className="appearance-none block w-full px-10 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-black sm:text-sm bg-transparent"
                 />
               </div>
             </div>
@@ -150,15 +150,15 @@ const Register: React.FC = () => {
                 <FaQuestionCircle className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Security Question (Optional)"
+                  placeholder="Your Fav anime waifu?"
                   {...register("securityQues")}
-                  className="appearance-none block w-full px-10 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-transparent"
+                  className="appearance-none block w-full px-10 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-black sm:text-sm bg-transparent"
                 />
               </div>
             </div>
             <button
               type="submit"
-              className="w-full py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-200"
+              className="w-full py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-black hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 transition duration-200"
               disabled={loading}
             >
               {loading ? "Registering..." : "Register"}
@@ -170,7 +170,7 @@ const Register: React.FC = () => {
               Already have an account?{" "}
               <Link
                 to="/login"
-                className="text-indigo-600 hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="text-black hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-black"
               >
                 Login here
               </Link>
