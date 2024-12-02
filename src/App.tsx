@@ -8,13 +8,15 @@ import Pnf from "./pages/Pnf"; // 404 page
 import Construction from "./pages/Construction";
 import Register from "./pages/Auth/Register";
 import Login from "./pages/Auth/Login";
-// import ForgotPassword from "./pages/Auth/ForgetPassword";
-import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer } from "react-toastify";
+import ForgotPassword from "./pages/Auth/ForgetPassword";
 import Dashboard from "./pages/user/Dashboard";
 import PrivateRoute from "./components/routes/Private";
 import GuptaRoute from "./components/routes/GuptaRoute";
-import ForgotPassword from "./pages/Auth/ForgetPassword";
+import AdminRoute from "./components/routes/AdminRoute";
+import AdminDashboard from "./pages/Admin/AdminDashboard";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 const NoMatch = () => {
   return <Pnf />;
 };
@@ -24,26 +26,38 @@ const App: React.FC = () => {
     <>
       <ToastContainer />
       <Routes>
+        {/* Public Routes */}
         <Route path="/" element={<HomePage />} />
-        {/* nested private route */}
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/policy" element={<PolicyPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+
+        {/* Protected User Dashboard */}
         <Route path="/dashboard" element={<PrivateRoute />}>
-          <Route path="" element={<Dashboard />} />
+          <Route path="user" element={<Dashboard />} />
+          {/* Show Pnf for /dashboard */}
+          <Route path="" element={<NoMatch />} />
         </Route>
-        {/* 
-        new guptaroute for login.auth/fpa */}
+
+        {/* Auth Routes for Login, Register, and Forgot Password */}
         <Route element={<GuptaRoute />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
         </Route>
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/policy" element={<PolicyPage />} />
-        <Route path="/contact" element={<ContactPage />} />
+
+        {/* Admin Dashboard Route */}
+        <Route path="/dashboard" element={<AdminRoute />}>
+          <Route path="admin" element={<AdminDashboard />} />
+        </Route>
+
+        {/* Under Construction Pages */}
         <Route path="/commandsector" element={<Construction />} />
         <Route path="/battlezone" element={<Construction />} />
         <Route path="/incensewar" element={<Construction />} />
         <Route path="/market" element={<Construction />} />
-        {/* <Route path="/forget-password" element={<ForgotPassword />} /> */}
+
+        {/* Catch-All Route */}
         <Route path="*" element={<NoMatch />} />
       </Routes>
     </>

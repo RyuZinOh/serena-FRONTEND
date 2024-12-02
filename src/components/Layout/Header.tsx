@@ -18,6 +18,14 @@ const Header: React.FC = () => {
     navigate("/login");
   };
 
+  const handleDashboardRedirect = () => {
+    if (auth?.user?.role === 1) {
+      navigate("/dashboard/admin");
+    } else {
+      navigate("/dashboard/user");
+    }
+  };
+
   const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
   const toggleMobileMenu = () => setIsMobileMenuOpen((prev) => !prev);
 
@@ -93,8 +101,11 @@ const Header: React.FC = () => {
                   {isDropdownOpen && (
                     <div className="absolute right-0 mt-2 w-48 bg-gray-800 text-white rounded-lg shadow-lg z-60">
                       <ul>
-                        <li className="px-4 py-2 hover:bg-gray-700 cursor-pointer">
-                          {username}
+                        <li
+                          onClick={handleDashboardRedirect}
+                          className="px-4 py-2 hover:bg-gray-700 cursor-pointer"
+                        >
+                          Dashboard
                         </li>
                         <li
                           onClick={() => navigate("/settings")}
