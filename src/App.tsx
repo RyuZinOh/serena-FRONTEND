@@ -16,6 +16,8 @@ import AdminRoute from "./components/routes/AdminRoute";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ManageUsers from "./pages/Admin/ManageUsers";
+import ManageReport from "./pages/Admin/ManageReport";
 
 const NoMatch = () => {
   return <Pnf />;
@@ -49,6 +51,8 @@ const App: React.FC = () => {
         {/* Admin Dashboard Route */}
         <Route path="/dashboard" element={<AdminRoute />}>
           <Route path="admin" element={<AdminDashboard />} />
+          <Route path="admin/users" element={<ManageUsers />} />
+          <Route path="admin/reports" element={<ManageReport />} />
         </Route>
 
         {/* Under Construction Pages */}
