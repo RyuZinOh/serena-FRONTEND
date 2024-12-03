@@ -24,12 +24,16 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [auth, setAuth] = useState<AuthState>({ user: null, token: null });
 
   useEffect(() => {
-    const storedAuth = localStorage.getItem("auth");
-    if (storedAuth) {
-      const parsedAuth = JSON.parse(storedAuth);
-      if (parsedAuth?.user && parsedAuth?.token) {
-        setAuth(parsedAuth);
+    try {
+      const storedAuth = localStorage.getItem("auth");
+      if (storedAuth) {
+        const parsedAuth = JSON.parse(storedAuth);
+        if (parsedAuth?.user && parsedAuth?.token) {
+          setAuth(parsedAuth);
+        }
       }
+    } catch (error) {
+      console.error("Error loading auth from localStorage", error);
     }
   }, []);
 
