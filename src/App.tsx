@@ -18,6 +18,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ManageUsers from "./pages/Admin/ManageUsers";
 import ManageReport from "./pages/Admin/ManageReport";
+import IncenseWar from "./pages/Global/InsenceWar";
 
 const NoMatch = () => {
   return <Pnf />;
@@ -58,7 +59,7 @@ const App: React.FC = () => {
         {/* Under Construction Pages */}
         <Route path="/commandsector" element={<Construction />} />
         <Route path="/battlezone" element={<Construction />} />
-        <Route path="/incensewar" element={<Construction />} />
+        <Route path="/incensewar" element={<IncenseWar />} />
         <Route path="/market" element={<Construction />} />
 
         {/* Catch-All Route */}

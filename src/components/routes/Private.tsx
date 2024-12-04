@@ -44,6 +44,7 @@ const PrivateRoute = () => {
           }
         } else {
           toast.error("Failed to connect to the backend.");
+        
         }
         setOk(false);
         navigate("/login");
