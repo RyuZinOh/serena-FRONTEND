@@ -238,7 +238,7 @@ const IncenseWar: React.FC = () => {
               >
                 <div className="flex justify-between items-center mb-4">
                   <img
-                    src="/src/assets/logo.png"
+                    src="/src/logo.png"
                     alt="Incense War Logo"
                     className="w-12 h-12 rounded-full"
                   />
