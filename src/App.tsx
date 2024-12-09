@@ -19,6 +19,11 @@ import "react-toastify/dist/ReactToastify.css";
 import ManageUsers from "./pages/Admin/ManageUsers";
 import ManageReport from "./pages/Admin/ManageReport";
 import IncenseWar from "./pages/Global/InsenceWar";
+import UserPokemon from "./pages/user/userPokemon";
+import Currency from "./pages/user/Currency";
+import TradeStatus from "./pages/user/TradeStatus";
+import Profile from "./pages/user/Profile";
+import BattlingStatus from "./pages/user/battlingStatus";
 
 const NoMatch = () => {
   return <Pnf />;
@@ -38,6 +43,14 @@ const App: React.FC = () => {
         {/* Protected User Dashboard */}
         <Route path="/dashboard" element={<PrivateRoute />}>
           <Route path="user" element={<Dashboard />} />
+          <Route path="user/pokemons" element={<UserPokemon />} />
+          <Route path="user/currency" element={<Currency />} />
+          <Route path="user/trades" element={<TradeStatus />} />
+          <Route path="user/profile" element={<Profile />} />
+          <Route path="user/battles" element={<BattlingStatus />} />
+          
+          
+
           {/* Show Pnf for /dashboard */}
           <Route path="" element={<NoMatch />} />
         </Route>
