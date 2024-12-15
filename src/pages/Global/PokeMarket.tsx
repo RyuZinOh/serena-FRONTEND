@@ -35,9 +35,7 @@ const MarketSection: React.FC = () => {
       try {
         const response = await fetch(
           `${import.meta.env.VITE_API_BASE_URL}/market/all`,
-          {
-            method: "GET",
-          }
+          { method: "GET" }
         );
 
         if (response.ok) {
@@ -118,12 +116,15 @@ const MarketSection: React.FC = () => {
               <div className="text-center">No Pokémon found.</div>
             ) : (
               displayedPokemons.map((pokemon) => (
-                <div key={pokemon._id} className="card">
-                  <div className="card-img-wrapper">
+                <div
+                  key={pokemon._id}
+                  className="card flex flex-col items-center"
+                >
+                  <div className="card-img-wrapper w-full h-56 mb-4 overflow-hidden">
                     <img
                       src={`data:${pokemon.image.contentType};base64,${pokemon.image.data}`}
                       alt={pokemon.name}
-                      className="card-img"
+                      className="card-img w-full h-full object-cover object-top"
                     />
                   </div>
                   <h2 className="text-lg font-semibold text-gray-800 mb-2">
@@ -135,7 +136,7 @@ const MarketSection: React.FC = () => {
                   <p className="text-xl font-bold text-gray-800 mb-4">
                     SRX {pokemon.price}
                   </p>
-                  <div className="card-iv-info text-left mb-4">
+                  <div className="card-iv-info text-left mb-4 w-full">
                     <p>
                       <strong>Attack:</strong> {pokemon.stats.attack}
                     </p>
