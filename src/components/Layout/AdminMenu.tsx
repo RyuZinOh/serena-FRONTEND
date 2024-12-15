@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { NavLink } from "react-router-dom";
-import { Home, Users, PieChart, Menu as MenuIcon } from "lucide-react";
+import { Home, Users, PieChart, Menu as MenuIcon, PlusSquare } from "lucide-react";
 
 const AdminMenu: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -14,6 +14,11 @@ const AdminMenu: React.FC = () => {
       to: "/dashboard/admin/reports",
       label: "Reports",
       icon: <PieChart size={18} />,
+    },
+    {
+      to: "/dashboard/admin/custompoke",
+      label: "Custom Poke", 
+      icon: <PlusSquare size={18} />, 
     },
   ];
 
