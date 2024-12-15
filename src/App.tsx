@@ -24,6 +24,7 @@ import Currency from "./pages/user/Currency";
 import TradeStatus from "./pages/user/TradeStatus";
 import Profile from "./pages/user/Profile";
 import BattlingStatus from "./pages/user/battlingStatus";
+import MarketSection from "./pages/Global/PokeMarket";
 
 const NoMatch = () => {
   return <Pnf />;
@@ -39,6 +40,7 @@ const App: React.FC = () => {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/policy" element={<PolicyPage />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/market" element={<MarketSection />} />
 
         {/* Protected User Dashboard */}
         <Route path="/dashboard" element={<PrivateRoute />}>
@@ -73,8 +75,7 @@ const App: React.FC = () => {
         <Route path="/commandsector" element={<Construction />} />
         <Route path="/battlezone" element={<Construction />} />
         <Route path="/incensewar" element={<IncenseWar />} />
-        <Route path="/market" element={<Construction />} />
-
+       
         {/* Catch-All Route */}
         <Route path="*" element={<NoMatch />} />
       </Routes>
