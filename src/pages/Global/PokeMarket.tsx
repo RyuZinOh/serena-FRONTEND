@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Layout from "../../components/Layout/Layout";
 import { toast } from "react-toastify";
 import { FaSearch } from "react-icons/fa";
+import useAuth from "../../context/useAuth";
 
 interface Pokemon {
   _id: string;
@@ -28,16 +29,17 @@ const MarketSection: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [auth] = useAuth();
+  const token = auth?.token;
+
   const itemsPerPage = 4;
 
   useEffect(() => {
     const fetchPokemons = async () => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_API_BASE_URL}/market/all`,
-          { method: "GET" }
+          `${import.meta.env.VITE_API_BASE_URL}/market/all`
         );
-
         if (response.ok) {
           const data = await response.json();
           setPokemons(data.pokemons);
@@ -50,7 +52,6 @@ const MarketSection: React.FC = () => {
         setError("Failed to fetch Pokémon data");
       }
     };
-
     fetchPokemons();
   }, []);
 
@@ -66,29 +67,45 @@ const MarketSection: React.FC = () => {
     }
   }, [searchQuery, pokemons]);
 
-  const handleBuyClick = () => {
-    toast.info("Buy functionality is yet to be implemented!");
+  const handleBuyClick = async (pokemonId: string) => {
+    if (!token) {
+      toast.error("You need to be logged in to buy a Pokémon.");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/market/buy/${pokemonId}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = await response.json();
+      if (response.ok) {
+        toast.success(data.message || "Pokémon purchased successfully!");
+      } else {
+        toast.error(data.message || "Failed to purchase Pokémon");
+      }
+    } catch {
+      toast.error("An error occurred while purchasing Pokémon");
+    }
   };
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
+  const handlePageChange = (page: number) => setCurrentPage(page);
 
   const totalPages = Math.ceil(filteredPokemons.length / itemsPerPage);
-
   const displayedPokemons = filteredPokemons.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
 
   return (
-    <Layout
-      title="Market Section"
-      description="Explore the market section."
-      author="Incense War Team"
-      keywords="Market, Pokémon, Incense War"
-      viewport="width=device-width, initial-scale=1.0"
-    >
+    <Layout title="Market Section" description="Explore the market section.">
       {error ? (
         <div className="text-center text-red-500 mt-8">{error}</div>
       ) : (
@@ -158,7 +175,10 @@ const MarketSection: React.FC = () => {
                       <strong>Speed:</strong> {pokemon.stats.speed}
                     </p>
                   </div>
-                  <button onClick={handleBuyClick} className="anime-btn w-full">
+                  <button
+                    onClick={() => handleBuyClick(pokemon._id)}
+                    className="anime-btn w-full"
+                  >
                     Buy Now
                   </button>
                 </div>
