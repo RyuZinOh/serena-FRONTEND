@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import Layout from "../../components/Layout/Layout";
 import UserMenu from "../../components/Layout/UserMenu";
 import useAuth from "../../context/useAuth";
-import { FaMinusCircle } from "react-icons/fa"; 
-import { toast, ToastContainer } from "react-toastify"; 
-import "react-toastify/dist/ReactToastify.css"; 
+import { FaMinusCircle } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface IvStats {
   attack: number;
@@ -41,6 +41,7 @@ const UserPokemon: React.FC = () => {
   useEffect(() => {
     const fetchPokemons = async () => {
       if (auth.user && auth.token) {
+        setLoading(true);
         try {
           const response = await fetch(
             `${import.meta.env.VITE_API_BASE_URL}/user/${
@@ -59,15 +60,11 @@ const UserPokemon: React.FC = () => {
           }
 
           const data: PokemonResponse = await response.json();
-          if (data.pokemons) {
-            setPokemons(data.pokemons);
-          } else {
-            setError("No pokemons found.");
-          }
-        } catch (err: unknown) {
-          if (err instanceof Error) {
-            setError(err.message);
-          }
+          setPokemons(data.pokemons || []);
+        } catch (err) {
+          setError(
+            err instanceof Error ? err.message : "Unexpected error occurred."
+          );
         } finally {
           setLoading(false);
         }
@@ -93,8 +90,8 @@ const UserPokemon: React.FC = () => {
         );
 
         if (response.ok) {
-          setPokemons((prev) =>
-            prev.filter((pokemon) => pokemon._id !== pokemonId)
+          setPokemons((prevPokemons) =>
+            prevPokemons.filter((pokemon) => pokemon._id !== pokemonId)
           );
           toast.success("Pokemon deleted successfully!", {
             position: "top-right",
@@ -105,25 +102,20 @@ const UserPokemon: React.FC = () => {
             draggable: true,
           });
         } else {
-          toast.error("Failed to delete Pokemon", {
+          throw new Error("Failed to delete Pokemon");
+        }
+      } catch (error) {
+        toast.error(
+          error instanceof Error ? error.message : "Failed to delete Pokemon",
+          {
             position: "top-right",
             autoClose: 3000,
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: true,
             draggable: true,
-          });
-        }
-      } catch (error) {
-        console.error("Error deleting Pokemon:", error);
-        toast.error("Failed to delete Pokemon", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
+          }
+        );
       }
     }
   };
@@ -131,57 +123,45 @@ const UserPokemon: React.FC = () => {
   return (
     <Layout
       title="UsersPokemons - Serena"
-      description="Dashboard page to see users pokemon"
+      description="Dashboard page to see users' Pokémon"
       author="Serena Team"
       keywords="dashboard, userpokemons"
       viewport="width=device-width, initial-scale=1.0"
     >
-      <div className="flex">
-        <div className="w-1/4">
-          <UserMenu />
-        </div>
-
+      <div className="flex h-screen bg-white">
+        <UserMenu />
         <div className="w-3/4 p-6">
           <h1 className="text-2xl font-semibold mb-4">Your Pokemon</h1>
           <p>Here you can view and manage your Pokémon collection.</p>
+
           {loading && (
             <p className="text-gray-500 text-sm">Loading Pokemons...</p>
           )}
           {error && <p className="text-red-500 text-sm">Error: {error}</p>}
+
           <div className="overflow-x-auto shadow-lg rounded-lg">
             <table className="min-w-full bg-white table-auto border-separate border-spacing-1">
               <thead>
                 <tr className="bg-gray-100 text-gray-700">
-                  <th className="px-4 py-2 text-left text-sm font-semibold">
-                    Sprite
-                  </th>
-                  <th className="px-4 py-2 text-left text-sm font-semibold">
-                    Name
-                  </th>
-                  <th className="px-4 py-2 text-left text-sm font-semibold">
-                    Types
-                  </th>
-                  <th className="px-4 py-2 text-left text-sm font-semibold">
-                    HP
-                  </th>
-                  <th className="px-4 py-2 text-left text-sm font-semibold">
-                    Attack
-                  </th>
-                  <th className="px-4 py-2 text-left text-sm font-semibold">
-                    Defense
-                  </th>
-                  <th className="px-4 py-2 text-left text-sm font-semibold">
-                    Special Attack
-                  </th>
-                  <th className="px-4 py-2 text-left text-sm font-semibold">
-                    Special Defense
-                  </th>
-                  <th className="px-4 py-2 text-left text-sm font-semibold">
-                    Speed
-                  </th>
-                  <th className="px-4 py-2 text-left text-sm font-semibold">
-                    Action
-                  </th>
+                  {[
+                    "Sprite",
+                    "Name",
+                    "Types",
+                    "HP",
+                    "Attack",
+                    "Defense",
+                    "Special Attack",
+                    "Special Defense",
+                    "Speed",
+                    "Action",
+                  ].map((header) => (
+                    <th
+                      key={header}
+                      className="px-4 py-2 text-left text-sm font-semibold"
+                    >
+                      {header}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
@@ -234,7 +214,6 @@ const UserPokemon: React.FC = () => {
         </div>
       </div>
 
-      {/* ToastContainer to display toasts */}
       <ToastContainer />
     </Layout>
   );

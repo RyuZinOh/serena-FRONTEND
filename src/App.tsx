@@ -26,6 +26,7 @@ import Profile from "./pages/user/Profile";
 import BattlingStatus from "./pages/user/battlingStatus";
 import MarketSection from "./pages/Global/PokeMarket";
 import CustomPoke from "./pages/Admin/CustomPoke";
+import YourCustumPoke from "./pages/user/YourCustumPoke";
 
 const NoMatch = () => {
   return <Pnf />;
@@ -51,6 +52,7 @@ const App: React.FC = () => {
           <Route path="user/trades" element={<TradeStatus />} />
           <Route path="user/profile" element={<Profile />} />
           <Route path="user/battles" element={<BattlingStatus />} />
+          <Route path="user/owned" element={<YourCustumPoke />} />
           
           
 

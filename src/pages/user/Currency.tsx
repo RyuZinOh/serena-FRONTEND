@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import useAuth from "../../context/useAuth";
 import Layout from "../../components/Layout/Layout";
 import UserMenu from "../../components/Layout/UserMenu";
@@ -8,51 +8,67 @@ interface CurrencyData {
   coin_value: number;
 }
 
+interface CurrencyState {
+  data: CurrencyData | null;
+  loading: boolean;
+  error: string | null;
+}
+
 const Currency: React.FC = () => {
   const [auth] = useAuth();
-  const [currency, setCurrency] = useState<CurrencyData | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [currencyState, setCurrencyState] = useState<CurrencyState>({
+    data: null,
+    loading: true,
+    error: null,
+  });
+
+  const greeting = useMemo(() => {
+    return auth.user ? `Hello, ${auth.user.name}!` : "Loading user info...";
+  }, [auth.user]);
+
+  const fetchCurrency = useCallback(async () => {
+    if (auth.user && auth.token) {
+      setCurrencyState({ data: null, loading: true, error: null });
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_BASE_URL}/currency/${auth.user.id}/get`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${auth.token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            throw new Error("Unauthorized! Please log in again.");
+          } else if (response.status === 403) {
+            throw new Error("You do not have access to this resource.");
+          } else if (response.status === 404) {
+            throw new Error("Currency data not found.");
+          } else {
+            throw new Error("An error occurred while fetching currency data.");
+          }
+        }
+
+        const data: CurrencyData = await response.json();
+        setCurrencyState({ data, loading: false, error: null });
+      } catch (error) {
+        setCurrencyState({
+          data: null,
+          loading: false,
+          error: (error as Error).message,
+        });
+      }
+    }
+  }, [auth.user, auth.token]);
 
   useEffect(() => {
-    const fetchCurrency = async () => {
-      if (auth.user && auth.token) {
-        try {
-          const response = await fetch(
-            `${import.meta.env.VITE_API_BASE_URL}/currency/${auth.user.id}/get`,
-            {
-              method: "GET",
-              headers: {
-                Authorization: `Bearer ${auth.token}`,
-              },
-            }
-          );
-
-          if (!response.ok) {
-            if (response.status === 401) {
-              setError("Unauthorized! Please log in again.");
-            } else if (response.status === 403) {
-              setError("You do not have access to this resource.");
-            } else if (response.status === 404) {
-              setError("Currency data not found.");
-            } else {
-              setError("An error occurred while fetching currency data.");
-            }
-            return;
-          }
-
-          const data: CurrencyData = await response.json();
-          setCurrency(data);
-        } catch {
-          setError("An unexpected error occurred. Please try again.");
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
-
     fetchCurrency();
-  }, [auth.user, auth.token]);
+  }, [fetchCurrency]);
+
+  const { data: currency, loading, error } = currencyState;
 
   return (
     <Layout
@@ -62,32 +78,24 @@ const Currency: React.FC = () => {
       keywords="currency, serenex, balance"
       viewport="width=device-width, initial-scale=1.0"
     >
-      <div className="flex flex-col md:flex-row justify-between p-8">
-        <div className="w-full md:w-1/4 mb-8 md:mb-0">
-          <UserMenu />
-        </div>
-        <div className="w-full md:w-3/4">
-          <div className="bg-white shadow-xl rounded-xl p-8 space-y-6">
-            <div>
-              <h2 className="text-3xl font-bold text-gray-800">
-                Serenex Wallet
-              </h2>
-              <p className="text-lg text-gray-600">
-                Manage and track your Serenex currency here.
-              </p>
+      <div className="flex h-screen bg-white">
+        <UserMenu />
+        <div className="w-3/4 p-6">
+          <h1 className="text-2xl font-semibold mb-4">Serenex Wallet</h1>
+          <p className="text-lg mb-6">{greeting}</p>
+
+          {loading && (
+            <div className="flex justify-center items-center py-10">
+              <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
             </div>
+          )}
 
-            {loading && (
-              <div className="flex justify-center items-center py-10">
-                <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-              </div>
-            )}
+          {error && (
+            <p className="text-red-600 text-center font-medium">{error}</p>
+          )}
 
-            {error && (
-              <p className="text-red-600 text-center font-medium">{error}</p>
-            )}
-
-            {!loading && currency && !error && (
+          {!loading && currency && !error && (
+            <div>
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
                   <div>
@@ -98,7 +106,7 @@ const Currency: React.FC = () => {
                       <img
                         src="https://github.com/RyuZinOh/static-assets/blob/main/serenex.png?raw=true"
                         alt="Serenex Logo"
-                        className="w-8 h-8 mr-4"
+                        className="w-10 h-10 mr-4"
                       />
                       <span className="text-2xl font-medium text-gray-700">
                         {currency.coin_name}
@@ -130,14 +138,14 @@ const Currency: React.FC = () => {
                   </ul>
                 </div>
               </div>
-            )}
+            </div>
+          )}
 
-            {!loading && !currency && !error && (
-              <p className="text-gray-600 text-center font-medium">
-                No currency data available.
-              </p>
-            )}
-          </div>
+          {!loading && !currency && !error && (
+            <p className="text-gray-600 text-center font-medium">
+              No currency data available.
+            </p>
+          )}
         </div>
       </div>
     </Layout>
