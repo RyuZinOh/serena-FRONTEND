@@ -27,6 +27,7 @@ import BattlingStatus from "./pages/user/battlingStatus";
 import MarketSection from "./pages/Global/PokeMarket";
 import CustomPoke from "./pages/Admin/CustomPoke";
 import YourCustumPoke from "./pages/user/YourCustumPoke";
+import Settings from "./pages/user/settings";
 
 const NoMatch = () => {
   return <Pnf />;
@@ -47,6 +48,7 @@ const App: React.FC = () => {
         {/* Protected User Dashboard */}
         <Route path="/dashboard" element={<PrivateRoute />}>
           <Route path="user" element={<Dashboard />} />
+          <Route path="user/setting" element={<Settings />} />
           <Route path="user/pokemons" element={<UserPokemon />} />
           <Route path="user/currency" element={<Currency />} />
           <Route path="user/trades" element={<TradeStatus />} />

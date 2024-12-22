@@ -1,16 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import useAuth from "../../context/useAuth";
 import { Menu, X } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
+import axios from "axios";
 
 const Header: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [profilePic, setProfilePic] = useState<string | null>(null);
   const navigate = useNavigate();
   const [auth, setAuth] = useAuth();
   const isLoggedIn = !!auth?.user;
   const username = auth?.user?.name || "User";
+
+  // Fetch profile picture using the auth token
+  useEffect(() => {
+    if (auth.token) {
+      axios
+        .get(`${import.meta.env.VITE_API_BASE_URL}/user/mypfp`, {
+          headers: { Authorization: `${auth.token}` },
+          responseType: "blob", 
+        })
+        .then((response) => {
+          setProfilePic(URL.createObjectURL(response.data));
+        })
+        .catch(() => {
+          setProfilePic(null); 
+        });
+    }
+  }, [auth.token]);
 
   const handleLogout = () => {
     localStorage.removeItem("auth");
@@ -92,9 +111,9 @@ const Header: React.FC = () => {
                     className="cursor-pointer flex items-center space-x-2"
                   >
                     <img
-                      src="https://picsum.photos/200"
+                      src={profilePic || "https://picsum.photos/200"}
                       alt="User Icon"
-                      className="w-10 h-10 rounded-full"
+                      className="w-12 h-12 rounded-full"
                     />
                     <span className="font-medium">{username}</span>
                   </div>
@@ -106,12 +125,6 @@ const Header: React.FC = () => {
                           className="px-4 py-2 hover:bg-gray-700 cursor-pointer"
                         >
                           Dashboard
-                        </li>
-                        <li
-                          onClick={() => navigate("/settings")}
-                          className="px-4 py-2 hover:bg-gray-700 cursor-pointer"
-                        >
-                          Settings
                         </li>
                         <li
                           onClick={handleLogout}

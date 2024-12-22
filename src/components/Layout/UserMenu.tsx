@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import {
   FaUserAlt,
@@ -10,17 +10,37 @@ import {
 import useAuth from "../../context/useAuth";
 import { MdPets } from "react-icons/md";
 import { IoLogOutOutline } from "react-icons/io5";
+import axios from "axios";
+import { MdSettings } from "react-icons/md";
 
 const UserMenu: React.FC = () => {
   const [auth] = useAuth();
+  const [profilePic, setProfilePic] = useState<string | null>(null);
   const username = auth?.user?.name || "User";
+
+  // Fetch profile picture using the auth token
+  useEffect(() => {
+    if (auth.token) {
+      axios
+        .get(`${import.meta.env.VITE_API_BASE_URL}/user/mypfp`, {
+          headers: { Authorization: `${auth.token}` },
+          responseType: "blob",
+        })
+        .then((response) => {
+          setProfilePic(URL.createObjectURL(response.data));
+        })
+        .catch(() => {
+          setProfilePic(null);
+        });
+    }
+  }, [auth.token]);
 
   return (
     <div className="otherworldly-container">
       <div className="identity-section">
         <div className="avatar-container">
           <img
-            src="https://picsum.photos/200"
+            src={profilePic || "https://picsum.photos/200"}
             alt="User Avatar"
             className="avatar-image"
           />
@@ -99,6 +119,18 @@ const UserMenu: React.FC = () => {
         >
           <MdPets className="navigation-icon" />
           <span>Owned Pokemons</span>
+        </NavLink>
+
+        <NavLink
+          to="/dashboard/user/setting"
+          className={({ isActive }) =>
+            `navigation-item ${
+              isActive ? "active-navigation" : "hover-navigation"
+            }`
+          }
+        >
+          <MdSettings className="navigation-icon" />
+          <span>Setting</span>
         </NavLink>
       </div>
 
