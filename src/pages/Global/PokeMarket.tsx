@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../../components/Layout/Layout";
 import { toast } from "react-toastify";
-import { FaSearch } from "react-icons/fa";
 import useAuth from "../../context/useAuth";
 
 interface Pokemon {
@@ -27,8 +26,10 @@ const MarketSection: React.FC = () => {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
   const [filteredPokemons, setFilteredPokemons] = useState<Pokemon[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [searchQuery, setSearchQuery] = useState<string>("");
+
   const [auth] = useAuth();
   const token = auth?.token;
 
@@ -40,31 +41,34 @@ const MarketSection: React.FC = () => {
         const response = await fetch(
           `${import.meta.env.VITE_API_BASE_URL}/market/all`
         );
-        if (response.ok) {
-          const data = await response.json();
-          setPokemons(data.pokemons);
-          setFilteredPokemons(data.pokemons);
-        } else {
+        if (!response.ok) {
           const errorData = await response.json();
-          setError(errorData.message || "An error occurred");
+          throw new Error(errorData.message || "Failed to fetch data");
         }
-      } catch {
-        setError("Failed to fetch Pokémon data");
+        const data = await response.json();
+        setPokemons(data.pokemons);
+        setFilteredPokemons(data.pokemons);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message || "An error occurred");
+        } else {
+          setError("An error occurred");
+        }
+      } finally {
+        setLoading(false);
       }
     };
     fetchPokemons();
   }, []);
 
   useEffect(() => {
-    if (searchQuery.trim() === "") {
-      setFilteredPokemons(pokemons);
-    } else {
-      setFilteredPokemons(
-        pokemons.filter((pokemon) =>
-          pokemon.name.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-      );
-    }
+    setFilteredPokemons(
+      searchQuery.trim()
+        ? pokemons.filter((pokemon) =>
+            pokemon.name.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+        : pokemons
+    );
   }, [searchQuery, pokemons]);
 
   const handleBuyClick = async (pokemonId: string) => {
@@ -110,32 +114,53 @@ const MarketSection: React.FC = () => {
         <div className="text-center text-red-500 mt-8">{error}</div>
       ) : (
         <div className="text-center p-8">
-          <div className="mb-8 w-60 h-12 relative flex rounded-xl mx-auto">
+          {/* New Search Bar Design */}
+          <div className="p-5 overflow-hidden w-[60px] h-[60px] hover:w-[270px] bg-black shadow-[2px_2px_20px_rgba(0,0,0,0.08)] rounded-full flex group items-center hover:duration-300 duration-300 mx-auto mb-8">
+            <div className="flex items-center justify-center fill-white">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                id="Isolation_Mode"
+                data-name="Isolation Mode"
+                viewBox="0 0 24 24"
+                width="22"
+                height="22"
+              >
+                <path d="M18.9,16.776A10.539,10.539,0,1,0,16.776,18.9l5.1,5.1L24,21.88ZM10.5,18A7.5,7.5,0,1,1,18,10.5,7.507,7.507,0,0,1,10.5,18Z"></path>
+              </svg>
+            </div>
             <input
-              required
               type="text"
-              id="search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="peer w-full bg-transparent outline-none px-4 text-base rounded-xl bg-white border border-black focus:shadow-md"
+              className="outline-none text-[20px] bg-transparent w-full text-white font-normal px-4"
+              placeholder="Search Pokémon"
             />
-            <label
-              htmlFor="search"
-              className="absolute top-1/2 left-4 px-2 transform -translate-y-1/2 font-light text-base bg-white text-black peer-focus:text-sm peer-focus:text-black peer-focus:left-3 peer-focus:-top-2 peer-valid:text-sm peer-valid:text-black peer-valid:left-3 peer-valid:-top-2 duration-150"
-            >
-              Search Pokémon
-            </label>
-            <FaSearch className="absolute top-1/2 right-4 transform -translate-y-1/2 text-black" />
           </div>
 
+          {/* Pokémon Cards */}
           <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {displayedPokemons.length === 0 ? (
+            {loading ? (
+              Array.from({ length: itemsPerPage }).map((_, index) => (
+                <div
+                  key={index}
+                  className="flex flex-col bg-neutral-300 w-56 h-64 animate-pulse rounded-xl p-4 gap-4"
+                >
+                  <div className="bg-neutral-400/50 w-full h-56 animate-pulse rounded-md"></div>
+                  <div className="flex flex-col gap-2">
+                    <div className="bg-neutral-400/50 w-full h-4 animate-pulse rounded-md"></div>
+                    <div className="bg-neutral-400/50 w-4/5 h-4 animate-pulse rounded-md"></div>
+                    <div className="bg-neutral-400/50 w-full h-4 animate-pulse rounded-md"></div>
+                    <div className="bg-neutral-400/50 w-2/4 h-4 animate-pulse rounded-md"></div>
+                  </div>
+                </div>
+              ))
+            ) : displayedPokemons.length === 0 ? (
               <div className="text-center">No Pokémon found.</div>
             ) : (
               displayedPokemons.map((pokemon) => (
                 <div
                   key={pokemon._id}
-                  className="card flex flex-col items-center"
+                  className="card flex flex-col items-center bg-white p-4 rounded-xl shadow-lg"
                 >
                   <div className="card-img-wrapper w-full h-56 mb-4 overflow-hidden">
                     <img
@@ -177,7 +202,7 @@ const MarketSection: React.FC = () => {
                   </div>
                   <button
                     onClick={() => handleBuyClick(pokemon._id)}
-                    className="anime-btn w-full"
+                    className="anime-btn w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
                   >
                     Buy Now
                   </button>
@@ -186,6 +211,7 @@ const MarketSection: React.FC = () => {
             )}
           </div>
 
+          {/* Pagination */}
           <div className="flex justify-center mt-8">
             <button
               onClick={() => handlePageChange(currentPage - 1)}
