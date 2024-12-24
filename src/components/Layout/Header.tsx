@@ -20,13 +20,13 @@ const Header: React.FC = () => {
       axios
         .get(`${import.meta.env.VITE_API_BASE_URL}/user/mypfp`, {
           headers: { Authorization: `${auth.token}` },
-          responseType: "blob", 
+          responseType: "blob",
         })
         .then((response) => {
           setProfilePic(URL.createObjectURL(response.data));
         })
         .catch(() => {
-          setProfilePic(null); 
+          setProfilePic(null);
         });
     }
   }, [auth.token]);
@@ -54,6 +54,7 @@ const Header: React.FC = () => {
     { to: "/commandsector", label: "Commandsector" },
     { to: "/incensewar", label: "Incensewar" },
     { to: "/market", label: "Market" },
+    { to: "/appearance", label: "Appearance" }, 
   ];
 
   return (

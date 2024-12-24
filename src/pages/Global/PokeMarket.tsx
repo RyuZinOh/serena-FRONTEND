@@ -115,8 +115,8 @@ const MarketSection: React.FC = () => {
       ) : (
         <div className="text-center p-8">
           {/* New Search Bar Design */}
-          <div className="p-5 overflow-hidden w-[60px] h-[60px] hover:w-[270px] bg-black shadow-[2px_2px_20px_rgba(0,0,0,0.08)] rounded-full flex group items-center hover:duration-300 duration-300 mx-auto mb-8">
-            <div className="flex items-center justify-center fill-white">
+          <div className="p-5 overflow-hidden w-[60px] h-[60px] hover:w-[270px] bg-white dark:bg-black shadow-[2px_2px_20px_rgba(0,0,0,0.08)] rounded-full flex group items-center hover:duration-300 duration-300 mx-auto mb-8 border-2 border-black dark:border-white">
+            <div className="flex items-center justify-center text-black dark:text-white">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 id="Isolation_Mode"
@@ -132,7 +132,7 @@ const MarketSection: React.FC = () => {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="outline-none text-[20px] bg-transparent w-full text-white font-normal px-4"
+              className="outline-none text-[20px] bg-transparent w-full text-black dark:text-white font-normal px-4"
               placeholder="Search Pokémon"
             />
           </div>
@@ -140,20 +140,8 @@ const MarketSection: React.FC = () => {
           {/* Pokémon Cards */}
           <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {loading ? (
-              Array.from({ length: itemsPerPage }).map((_, index) => (
-                <div
-                  key={index}
-                  className="flex flex-col bg-neutral-300 w-56 h-64 animate-pulse rounded-xl p-4 gap-4"
-                >
-                  <div className="bg-neutral-400/50 w-full h-56 animate-pulse rounded-md"></div>
-                  <div className="flex flex-col gap-2">
-                    <div className="bg-neutral-400/50 w-full h-4 animate-pulse rounded-md"></div>
-                    <div className="bg-neutral-400/50 w-4/5 h-4 animate-pulse rounded-md"></div>
-                    <div className="bg-neutral-400/50 w-full h-4 animate-pulse rounded-md"></div>
-                    <div className="bg-neutral-400/50 w-2/4 h-4 animate-pulse rounded-md"></div>
-                  </div>
-                </div>
-              ))
+              // Loading state
+              <div className="text-center">Loading...</div>
             ) : displayedPokemons.length === 0 ? (
               <div className="text-center">No Pokémon found.</div>
             ) : (

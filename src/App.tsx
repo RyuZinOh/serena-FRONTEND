@@ -28,6 +28,7 @@ import MarketSection from "./pages/Global/PokeMarket";
 import CustomPoke from "./pages/Admin/CustomPoke";
 import YourCustumPoke from "./pages/user/YourCustumPoke";
 import Settings from "./pages/user/settings";
+import BannerCards from "./pages/Global/BannerCards";
 
 const NoMatch = () => {
   return <Pnf />;
@@ -44,6 +45,7 @@ const App: React.FC = () => {
         <Route path="/policy" element={<PolicyPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/market" element={<MarketSection />} />
+        <Route path="/appearance" element={<BannerCards />} />
 
         {/* Protected User Dashboard */}
         <Route path="/dashboard" element={<PrivateRoute />}>
