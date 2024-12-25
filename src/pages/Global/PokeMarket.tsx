@@ -108,6 +108,22 @@ const MarketSection: React.FC = () => {
     currentPage * itemsPerPage
   );
 
+  const renderSkeletons = (count: number) => (
+    <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+      {Array.from({ length: count }).map((_, index) => (
+        <div
+          key={index}
+          className="card flex flex-col items-center bg-gray-100 p-4 rounded-xl shadow-lg animate-pulse"
+        >
+          <div className="card-img-wrapper w-full h-56 bg-gray-300 rounded-md mb-4"></div>
+          <div className="h-4 bg-gray-300 w-3/4 rounded mb-2"></div>
+          <div className="h-4 bg-gray-300 w-1/2 rounded mb-4"></div>
+          <div className="h-4 bg-gray-300 w-full rounded"></div>
+        </div>
+      ))}
+    </div>
+  );
+
   return (
     <Layout title="Market Section" description="Explore the market section.">
       {error ? (
@@ -138,66 +154,67 @@ const MarketSection: React.FC = () => {
           </div>
 
           {/* Pokémon Cards */}
-          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {loading ? (
-              // Loading state
-              <div className="text-center">Loading...</div>
-            ) : displayedPokemons.length === 0 ? (
-              <div className="text-center">No Pokémon found.</div>
-            ) : (
-              displayedPokemons.map((pokemon) => (
-                <div
-                  key={pokemon._id}
-                  className="card flex flex-col items-center bg-white p-4 rounded-xl shadow-lg"
-                >
-                  <div className="card-img-wrapper w-full h-56 mb-4 overflow-hidden">
-                    <img
-                      src={`data:${pokemon.image.contentType};base64,${pokemon.image.data}`}
-                      alt={pokemon.name}
-                      className="card-img w-full h-full object-cover object-top"
-                    />
-                  </div>
-                  <h2 className="text-lg font-semibold text-gray-800 mb-2">
-                    {pokemon.name}
-                  </h2>
-                  <p className="text-sm text-gray-600 mb-4">
-                    {pokemon.description}
-                  </p>
-                  <p className="text-xl font-bold text-gray-800 mb-4">
-                    SRX {pokemon.price}
-                  </p>
-                  <div className="card-iv-info text-left mb-4 w-full">
-                    <p>
-                      <strong>Attack:</strong> {pokemon.stats.attack}
-                    </p>
-                    <p>
-                      <strong>Defense:</strong> {pokemon.stats.defense}
-                    </p>
-                    <p>
-                      <strong>HP:</strong> {pokemon.stats.hp}
-                    </p>
-                    <p>
-                      <strong>Special Attack:</strong>{" "}
-                      {pokemon.stats.special_attack}
-                    </p>
-                    <p>
-                      <strong>Special Defense:</strong>{" "}
-                      {pokemon.stats.special_defense}
-                    </p>
-                    <p>
-                      <strong>Speed:</strong> {pokemon.stats.speed}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => handleBuyClick(pokemon._id)}
-                    className="anime-btn w-full bg-gray-800 text-white py-2 rounded-lg"
+          {loading ? (
+            renderSkeletons(4)
+          ) : (
+            <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+              {displayedPokemons.length === 0 ? (
+                <div className="text-center">No Pokémon found.</div>
+              ) : (
+                displayedPokemons.map((pokemon) => (
+                  <div
+                    key={pokemon._id}
+                    className="card flex flex-col items-center bg-white p-4 rounded-xl shadow-lg"
                   >
-                    Buy Now
-                  </button>
-                </div>
-              ))
-            )}
-          </div>
+                    <div className="card-img-wrapper w-full h-56 mb-4 overflow-hidden">
+                      <img
+                        src={`data:${pokemon.image.contentType};base64,${pokemon.image.data}`}
+                        alt={pokemon.name}
+                        className="card-img w-full h-full object-cover object-top"
+                      />
+                    </div>
+                    <h2 className="text-lg font-semibold text-gray-800 mb-2">
+                      {pokemon.name}
+                    </h2>
+                    <p className="text-sm text-gray-600 mb-4">
+                      {pokemon.description}
+                    </p>
+                    <p className="text-xl font-bold text-gray-800 mb-4">
+                      SRX {pokemon.price}
+                    </p>
+                    <div className="card-iv-info text-left mb-4 w-full">
+                      <p>
+                        <strong>Attack:</strong> {pokemon.stats.attack}
+                      </p>
+                      <p>
+                        <strong>Defense:</strong> {pokemon.stats.defense}
+                      </p>
+                      <p>
+                        <strong>HP:</strong> {pokemon.stats.hp}
+                      </p>
+                      <p>
+                        <strong>Special Attack:</strong>{" "}
+                        {pokemon.stats.special_attack}
+                      </p>
+                      <p>
+                        <strong>Special Defense:</strong>{" "}
+                        {pokemon.stats.special_defense}
+                      </p>
+                      <p>
+                        <strong>Speed:</strong> {pokemon.stats.speed}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => handleBuyClick(pokemon._id)}
+                      className="anime-btn w-full bg-gray-800 text-white py-2 rounded-lg"
+                    >
+                      Buy Now
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
 
           {/* Pagination */}
           <div className="flex justify-center mt-8">
