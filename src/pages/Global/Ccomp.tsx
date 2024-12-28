@@ -3,8 +3,9 @@ import Skeleton from "react-loading-skeleton";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 
 interface Image {
-  name: string;
   url: string;
+  description: string;
+  price: string;
 }
 
 const Ccomp: React.FC = () => {
@@ -81,14 +82,26 @@ const Ccomp: React.FC = () => {
             {currentItems.map((image) => (
               <div
                 key={image.url}
-                className="card flex flex-col items-center bg-white p-4 rounded-xl shadow-lg hover:scale-105 transition-transform hover:shadow-[0_10px_15px_rgba(0,0,0,0.3)]"
+                className="card flex flex-col items-center bg-white p-4 rounded-xl shadow-lg hover:scale-105 transition-transform hover:shadow-[0_10px_15px_rgba(0,0,0,0.3)] relative"
               >
-                <img
-                  src={image.url}
-                  alt={image.name}
-                  className="w-full h-120 object-cover rounded-md"
-                  loading="lazy"
-                />
+                <div className="relative group">
+                  <img
+                    src={image.url}
+                    alt="Card"
+                    className="w-full h-120 object-cover rounded-md"
+                    loading="lazy"
+                  />
+
+                  {/* Description and Price - Show on Hover */}
+                  <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 flex justify-center items-center flex-col text-white transition-opacity duration-500">
+                    <p className="text-md sm:text-lg md:text-xl text-center px-4 transform scale-95 group-hover:scale-100 transition-transform duration-500">
+                      {image.description}
+                    </p>
+                    <p className="text-lg sm:text-xl md:text-2xl font-bold mt-2 transform scale-95 group-hover:scale-100 transition-transform duration-500">
+                      {image.price} SRX
+                    </p>
+                  </div>
+                </div>
               </div>
             ))}
           </div>

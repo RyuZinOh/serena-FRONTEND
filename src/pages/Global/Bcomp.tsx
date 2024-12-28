@@ -6,6 +6,8 @@ const Bcomp: React.FC = () => {
   interface BackgroundImage {
     url: string;
     name: string;
+    description: string;
+    price: string;
   }
 
   const [backgrounds, setBackgrounds] = useState<BackgroundImage[]>([]);
@@ -82,14 +84,24 @@ const Bcomp: React.FC = () => {
             {currentItems.map((image) => (
               <div
                 key={image.url}
-                className="card flex flex-col items-center bg-white p-4 rounded-xl shadow-lg hover:scale-105 transition-transform hover:shadow-[0_10px_15px_rgba(0,0,0,0.3)]"
+                className="card flex flex-col items-center bg-white p-4 rounded-xl shadow-lg hover:scale-105 transition-transform hover:shadow-[0_10px_15px_rgba(0,0,0,0.3)] relative"
               >
-                <img
-                  src={image.url}
-                  alt={image.name}
-                  className="w-full h-56 object-cover rounded-md"
-                  loading="lazy"
-                />
+                <div className="relative group">
+                  <img
+                    src={image.url}
+                    alt={image.name}
+                    className="w-full h-56 object-cover rounded-md transform scale-100 group-hover:scale-105 transition-transform duration-500"
+                    loading="lazy"
+                  />
+
+                  {/* Description and Price - Show on Hover */}
+                  <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 flex justify-center items-center flex-col text-white transition-opacity duration-300 group-hover:scale-105 transform">
+                    <p className="text-sm text-center px-4">
+                      {image.description}
+                    </p>
+                    <p className="text-xl font-bold mt-2">{image.price} SRX</p>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
