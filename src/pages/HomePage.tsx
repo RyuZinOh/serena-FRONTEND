@@ -1,36 +1,90 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout/Layout";
-import useAuth from "../context/useAuth";
+import { Link } from "react-router-dom";
+import { FaArrowRight } from "react-icons/fa";
 
 const HomePage: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [auth] = useAuth();
 
-  const images = useMemo(
-    () => [
-      "https://raw.githubusercontent.com/RyuZinOh/static-assets/main/serena-carousal/pikachu.png",
-      "https://raw.githubusercontent.com/RyuZinOh/static-assets/main/serena-carousal/battleTestament.jpg",
-      "https://raw.githubusercontent.com/RyuZinOh/static-assets/main/serena-carousal/pokemons.png",
-    ],
-    []
-  );
+  interface Card {
+    url: string;
+    description: string;
+    price: number;
+  }
 
-  const slideTitles = useMemo(
-    () => [
-      "Catch 'Em All with Serena",
-      "Battle Legendary Pokémon",
-      "Explore the World of Pokémon",
-    ],
-    []
-  );
+  interface Background {
+    url: string;
+    description: string;
+    price: number;
+  }
+
+  const [cards, setCards] = useState<Card[]>([]);
+  const [backgrounds, setBackgrounds] = useState<Background[]>([]);
+  const [loadingCards, setLoadingCards] = useState<boolean>(true);
+  const [loadingBackgrounds, setLoadingBackgrounds] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const images = [
+    "https://raw.githubusercontent.com/RyuZinOh/static-assets/main/serena-carousal/pikachu.png",
+    "https://raw.githubusercontent.com/RyuZinOh/static-assets/main/serena-carousal/battleTestament.jpg",
+    "https://raw.githubusercontent.com/RyuZinOh/static-assets/main/serena-carousal/pokemons.png",
+  ];
+
+  const slideTitles = [
+    "Catch 'Em All with Serena",
+    "Battle Legendary Pokémon",
+    "Explore the World of Pokémon",
+  ];
+
+  useEffect(() => {
+    const fetchCards = async () => {
+      setLoadingCards(true);
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_BASE_URL}/kamehameha/card`
+        );
+        if (!response.ok) throw new Error("Failed to fetch cards");
+        const data = await response.json();
+        setCards(data.cards.slice(0, 12)); 
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("An unknown error occurred");
+        }
+      } finally {
+        setLoadingCards(false);
+      }
+    };
+
+    const fetchBackgrounds = async () => {
+      setLoadingBackgrounds(true);
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_BASE_URL}/kamehameha/background`
+        );
+        if (!response.ok) throw new Error("Failed to fetch backgrounds");
+        const data = await response.json();
+        setBackgrounds(data.backgrounds.slice(0, 12)); 
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("An unknown error occurred");
+        }
+      } finally {
+        setLoadingBackgrounds(false);
+      }
+    };
+
+    fetchCards();
+    fetchBackgrounds();
+  }, []);
 
   const prevSlide = () =>
     setCurrentSlide((prev) => (prev === 0 ? images.length - 1 : prev - 1));
-
   const nextSlide = () =>
     setCurrentSlide((prev) => (prev === images.length - 1 ? 0 : prev + 1));
-
-  const goToSlide = (index: number) => setCurrentSlide(index);
 
   return (
     <Layout
@@ -40,7 +94,7 @@ const HomePage: React.FC = () => {
       keywords="Pokemon, Battle, Trade, Catch, Serena"
       viewport="width=device-width, initial-scale=1.0"
     >
-      <div className="relative w-full h-[400px] md:h-[1080px] overflow-hidden z-0">
+      <div className="relative w-full h-[400px] md:h-[1080px] overflow-hidden">
         <div
           className="flex transition-transform duration-500 ease-in-out"
           style={{ transform: `translateX(-${currentSlide * 100}%)` }}
@@ -48,7 +102,7 @@ const HomePage: React.FC = () => {
           {images.map((image, index) => (
             <div
               key={index}
-              className="w-full flex-shrink-0 relative group overflow-hidden"
+              className="w-full flex-shrink-0 relative overflow-hidden"
             >
               <img
                 src={image}
@@ -57,11 +111,7 @@ const HomePage: React.FC = () => {
               />
               <div className="absolute bottom-0 left-0 w-full h-2/3 bg-gradient-to-t from-black/80 to-transparent"></div>
               <div
-                className={`absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white font-bold text-2xl md:text-4xl text-shadow-lg transition-all duration-700 ease-in-out ${
-                  currentSlide === index
-                    ? "text-yellow-400 scale-110 opacity-100 animate-morphingText"
-                    : "text-white scale-100 opacity-80"
-                }`}
+                className={`absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white font-bold text-2xl md:text-4xl text-shadow-lg`}
               >
                 {slideTitles[index]}
               </div>
@@ -83,26 +133,81 @@ const HomePage: React.FC = () => {
         >
           &#10095;
         </button>
-
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-4">
-          {images.map((_, index) => (
-            <div
-              key={index}
-              onClick={() => goToSlide(index)}
-              className={`w-3 h-3 rounded-full cursor-pointer transition duration-300 ${
-                currentSlide === index ? "bg-white scale-110" : "bg-gray-400"
-              }`}
-            />
-          ))}
-        </div>
       </div>
 
-      <div className="p-2 bg-gray-50 mt-2 rounded-md shadow-md max-h-40 overflow-hidden z-10">
-        <h3 className="font-semibold text-sm mb-1">Auth Debug Info</h3>
-        <pre className="text-xs bg-gray-200 p-2 rounded overflow-ellipsis overflow-hidden">
-          {JSON.stringify(auth).slice(0, 150)}
-          {JSON.stringify(auth).length > 150 ? "..." : ""}
-        </pre>
+      <div className="mt-8">
+        <h2 className="text-2xl font-bold mb-4">Featured Cards</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+          {loadingCards ? (
+            <div>Loading cards...</div>
+          ) : error ? (
+            <div className="text-red-500">{error}</div>
+          ) : (
+            cards.map((card) => (
+              <div
+                key={card.url}
+                className="card flex flex-col items-center relative bg-white p-4 rounded-xl shadow-lg hover:scale-105 transition-transform hover:shadow-[0_10px_15px_rgba(0,0,0,0.3)]"
+              >
+                <div className="relative group">
+                  <img
+                    src={card.url}
+                    alt={card.description}
+                    className="w-full h-[450px] object-cover rounded-md"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 flex justify-center items-center flex-col text-white transition-opacity duration-500">
+                    <p className="text-lg text-center px-4">
+                      {card.description}
+                    </p>
+                    <p className="text-xl font-bold mt-2">{card.price} SRX</p>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        <h2 className="text-2xl font-bold mt-8 mb-4">Featured Backgrounds</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+          {loadingBackgrounds ? (
+            <div>Loading backgrounds...</div>
+          ) : error ? (
+            <div className="text-red-500">{error}</div>
+          ) : (
+            backgrounds.map((background) => (
+              <div
+                key={background.url}
+                className="card flex flex-col items-center relative bg-white p-4 rounded-xl shadow-lg hover:scale-105 transition-transform hover:shadow-[0_10px_15px_rgba(0,0,0,0.3)]"
+              >
+                <div className="relative group">
+                  <img
+                    src={background.url}
+                    alt={background.description}
+                    className="w-full h-[250px] object-cover rounded-md"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 flex justify-center items-center flex-col text-white transition-opacity duration-500">
+                    <p className="text-lg text-center px-4">
+                      {background.description}
+                    </p>
+                    <p className="text-xl font-bold mt-2">
+                      {background.price} SRX
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        <div className="flex justify-center items-center mt-8">
+          <Link
+            to="/appearance"
+            className="text-white bg-black px-6 py-2 rounded-full text-lg font-semibold flex items-center gap-2"
+          >
+            View More <FaArrowRight />
+          </Link>
+        </div>
       </div>
     </Layout>
   );

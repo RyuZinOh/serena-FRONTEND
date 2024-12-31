@@ -54,7 +54,7 @@ const Header: React.FC = () => {
     { to: "/commandsector", label: "Commandsector" },
     { to: "/incensewar", label: "Incensewar" },
     { to: "/market", label: "Market" },
-    { to: "/appearance", label: "Appearance" }, 
+    { to: "/appearance", label: "Appearance" },
   ];
 
   return (
@@ -72,7 +72,7 @@ const Header: React.FC = () => {
       <nav className="bg-black text-white shadow-lg sticky top-0 z-50">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center h-20">
-            <div className="md:hidden">
+            <div className="lg:hidden">
               <button
                 onClick={toggleMobileMenu}
                 className="text-white focus:outline-none"
@@ -81,7 +81,7 @@ const Header: React.FC = () => {
               </button>
             </div>
 
-            <div className="hidden md:flex space-x-4 sm:space-x-8 justify-start w-full">
+            <div className="hidden lg:flex space-x-4 sm:space-x-8 justify-start w-full">
               {navLinks.map(({ to, label }) => (
                 <NavLink
                   key={to}
@@ -97,6 +97,7 @@ const Header: React.FC = () => {
               ))}
             </div>
 
+            {/* User Profile & Logout */}
             <div className="flex items-center space-x-4 ml-auto">
               {!isLoggedIn ? (
                 <button
@@ -143,10 +144,11 @@ const Header: React.FC = () => {
         </div>
       </nav>
 
+      {/* Mobile Menu */}
       <div
-        className={`fixed top-0 left-0 w-1/2 h-full bg-black text-white transition-transform transform ${
+        className={`fixed top-0 left-0 w-3/4 h-full bg-black text-white transition-transform transform ${
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-        } md:hidden z-50`}
+        } lg:hidden z-50`}
       >
         <div className="flex flex-col items-center py-10 mt-8">
           <button
@@ -170,6 +172,7 @@ const Header: React.FC = () => {
           ))}
         </div>
 
+        {/* GitHub Link at the Bottom */}
         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-50">
           <a
             href="https://github.com/RyuZinOh"
