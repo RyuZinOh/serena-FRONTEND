@@ -70,7 +70,7 @@ const Tcomp: React.FC = () => {
   };
 
   return (
-    <div className="p-8 bg-white text-black">
+    <div className="p-0 bg-white text-black">
       {error ? (
         <div className="text-center text-red-500">
           <p>{error}</p>
@@ -81,61 +81,84 @@ const Tcomp: React.FC = () => {
         </div>
       ) : (
         <section>
-          <h2 className="text-3xl font-bold mb-6 text-center text-black">
-            Available Titles
-          </h2>
-
-          <table className="min-w-full table-auto border-separate border-spacing-0">
-            <thead className="bg-black text-white">
-              <tr>
-                <th className="border px-4 py-3 text-xl font-semibold">No.</th>
-                <th className="border px-4 py-3 text-xl font-semibold">
-                  Title
-                </th>
-                <th className="border px-4 py-3 text-xl font-semibold">
-                  Price
-                </th>
-                <th className="border px-4 py-3 text-xl font-semibold">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="text-black">
-              {currentTitles.length > 0 ? (
-                currentTitles.map((title, index) => (
-                  <tr
-                    key={index}
-                    className={`hover:bg-gray-100 ${
-                      index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                    }`}
-                  >
-                    <td className="border px-4 py-4 text-lg">
-                      {indexOfFirstTitle + index + 1}
-                    </td>
-                    <td className="border px-4 py-4 text-lg">{title.name}</td>
-                    <td className="border px-4 py-4 text-lg">
-                      {title.price} SRX
-                    </td>
-                    <td className="border px-4 py-4 text-lg">
-                      <button
-                        onClick={() => handleBuyTitle(title.name)}
-                        className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-700"
-                      >
-                        <FaShoppingCart />
-                      </button>
+          {/* Responsive Table */}
+          <div className="hidden md:block">
+            <table className="min-w-full table-auto border-separate border-spacing-0">
+              <thead className="bg-black text-white">
+                <tr className="text-center">
+                  <th className="border px-4 py-3 text-xl font-semibold">
+                    No.
+                  </th>
+                  <th className="border px-4 py-3 text-xl font-semibold">
+                    Title
+                  </th>
+                  <th className="border px-4 py-3 text-xl font-semibold">
+                    Price
+                  </th>
+                  <th className="border px-4 py-3 text-xl font-semibold">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="text-black text-center">
+                {currentTitles.length > 0 ? (
+                  currentTitles.map((title, index) => (
+                    <tr
+                      key={index}
+                      className={`hover:bg-gray-100 ${
+                        index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                      }`}
+                    >
+                      <td className="border px-4 py-4 text-lg">
+                        {indexOfFirstTitle + index + 1}
+                      </td>
+                      <td className="border px-4 py-4 text-lg">{title.name}</td>
+                      <td className="border px-4 py-4 text-lg">
+                        {title.price} SRX
+                      </td>
+                      <td className="border px-4 py-4 text-lg">
+                        <button
+                          onClick={() => handleBuyTitle(title.name)}
+                          className="px-4 py-2 bg-black text-white rounded-full hover:bg-gray-700"
+                        >
+                          <FaShoppingCart />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={4} className="px-4 py-4 text-center">
+                      No titles available.
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={4} className="px-4 py-4 text-center">
-                    No titles available.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                )}
+              </tbody>
+            </table>
+          </div>
 
+          {/* Mobile view as Cards */}
+          <div className="md:hidden">
+            <div className="grid grid-cols-1 gap-4">
+              {currentTitles.map((title, index) => (
+                <div
+                  key={index}
+                  className="bg-white p-4 rounded-lg shadow-lg flex flex-col items-center"
+                >
+                  <h3 className="text-xl font-semibold">{title.name}</h3>
+                  <p className="text-lg">{title.price} SRX</p>
+                  <button
+                    onClick={() => handleBuyTitle(title.name)}
+                    className="mt-2 px-4 py-2 bg-black text-white rounded-full hover:bg-gray-700"
+                  >
+                    <FaShoppingCart />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Pagination Controls */}
           <tfoot>
             <tr>
               <td colSpan={4} className="px-4 py-4 text-center">

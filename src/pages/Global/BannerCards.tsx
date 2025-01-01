@@ -3,86 +3,79 @@ import Layout from "../../components/Layout/Layout";
 import Bcomp from "./Bcomp";
 import Ccomp from "./Ccomp";
 import Tcomp from "./Tcomp";
-import { CSSTransition } from "react-transition-group";
+import { Menu } from "lucide-react";
 
 const BannerCards: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<"cards" | "backgrounds" | "titles">("cards");
+  const [activeTab, setActiveTab] = useState<
+    "cards" | "backgrounds" | "titles"
+  >("cards");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   return (
     <Layout
       title="Banner Cards"
       description="Explore stunning backgrounds and cards."
     >
-      <nav className="p-4 bg-white text-black shadow-lg">
-        <ul className="flex gap-8 items-center justify-center">
-          <li>
-            <button
-              className={`px-6 py-2 rounded-full transition-all duration-300 transform ${
-                activeTab === "cards"
-                  ? "font-semibold text-blue-600 border-b-4 border-blue-600"
-                  : "text-gray-600 border-b-4 border-transparent"
-              } hover:text-blue-600 hover:border-blue-600 hover:scale-105`}
-              onClick={() => setActiveTab("cards")}
-            >
-              Cards
-            </button>
-          </li>
+      <button
+        className="md:hidden absolute top-18 left-4 z-50 p-2"
+        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+      >
+        <Menu className="w-6 h-6 text-gray-600" />
+      </button>
 
-          <li>
-            <button
-              className={`px-6 py-2 rounded-full transition-all duration-300 transform ${
-                activeTab === "backgrounds"
-                  ? "font-semibold text-blue-600 border-b-4 border-blue-600"
-                  : "text-gray-600 border-b-4 border-transparent"
-              } hover:text-blue-600 hover:border-blue-600 hover:scale-105`}
-              onClick={() => setActiveTab("backgrounds")}
-            >
-              Backgrounds
-            </button>
-          </li>
-
-          <li>
-            <button
-              className={`px-6 py-2 rounded-full transition-all duration-300 transform ${
-                activeTab === "titles"
-                  ? "font-semibold text-blue-600 border-b-4 border-blue-600"
-                  : "text-gray-600 border-b-4 border-transparent"
-              } hover:text-blue-600 hover:border-blue-600 hover:scale-105`}
-              onClick={() => setActiveTab("titles")}
-            >
-              Titles
-            </button>
-          </li>
-        </ul>
-      </nav>
-
-      <div className="p-8">
-        <CSSTransition
-          in={activeTab === "cards"}
-          timeout={300}
-          classNames="fade"
-          unmountOnExit
+      <div className="flex h-screen">
+        <nav
+          className={`${
+            isSidebarOpen ? "block" : "hidden"
+          } md:block w-48 h-full bg-white shadow-md p-4 transition-transform duration-300`}
         >
-          <Ccomp />
-        </CSSTransition>
+          <ul className="flex flex-col gap-10 mt-12">
+            <li>
+              <button
+                className={`w-full px-6 py-2 text-left rounded-lg transition-colors duration-300 ease-in-out ${
+                  activeTab === "cards"
+                    ? "font-semibold text-golden-500 bg-gray-100 shadow-lg"
+                    : "text-gray-600 hover:text-golden-500 hover:bg-gray-50"
+                }`}
+                onClick={() => setActiveTab("cards")}
+              >
+                Cards
+              </button>
+            </li>
 
-        <CSSTransition
-          in={activeTab === "backgrounds"}
-          timeout={300}
-          classNames="fade"
-          unmountOnExit
-        >
-          <Bcomp />
-        </CSSTransition>
+            <li>
+              <button
+                className={`w-full px-6 py-2 text-left rounded-lg transition-colors duration-300 ease-in-out ${
+                  activeTab === "backgrounds"
+                    ? "font-semibold text-golden-500 bg-gray-100 shadow-lg"
+                    : "text-gray-600 hover:text-golden-500 hover:bg-gray-50"
+                }`}
+                onClick={() => setActiveTab("backgrounds")}
+              >
+                Backgrounds
+              </button>
+            </li>
 
-        <CSSTransition
-          in={activeTab === "titles"}
-          timeout={300}
-          classNames="fade"
-          unmountOnExit
-        >
-          <Tcomp />
-        </CSSTransition>
+            <li>
+              <button
+                className={`w-full px-6 py-2 text-left rounded-lg transition-colors duration-300 ease-in-out ${
+                  activeTab === "titles"
+                    ? "font-semibold text-golden-500 bg-gray-100 shadow-lg"
+                    : "text-gray-600 hover:text-golden-500 hover:bg-gray-50"
+                }`}
+                onClick={() => setActiveTab("titles")}
+              >
+                Titles
+              </button>
+            </li>
+          </ul>
+        </nav>
+
+        <div className="flex-1 p-8 overflow-auto custom-scrollbar">
+          {activeTab === "cards" && <Ccomp />}
+          {activeTab === "backgrounds" && <Bcomp />}
+          {activeTab === "titles" && <Tcomp />}
+        </div>
       </div>
     </Layout>
   );

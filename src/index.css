@@ -171,3 +171,22 @@
 .exit-icon {
   font-size: 1.5rem;
 }
+
+
+/* Hide buyt keeping it scrollable*/
+.custom-scrollbar {
+  overflow: auto; 
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 0px; 
+  height: 0px; 
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: transparent; 
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}

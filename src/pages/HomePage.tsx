@@ -45,7 +45,7 @@ const HomePage: React.FC = () => {
         );
         if (!response.ok) throw new Error("Failed to fetch cards");
         const data = await response.json();
-        setCards(data.cards.slice(0, 12)); 
+        setCards(data.cards.slice(0, 12));
       } catch (err: unknown) {
         if (err instanceof Error) {
           setError(err.message);
@@ -65,7 +65,7 @@ const HomePage: React.FC = () => {
         );
         if (!response.ok) throw new Error("Failed to fetch backgrounds");
         const data = await response.json();
-        setBackgrounds(data.backgrounds.slice(0, 12)); 
+        setBackgrounds(data.backgrounds.slice(0, 6)); // Fetch 6 to show 2 backgrounds per row
       } catch (err: unknown) {
         if (err instanceof Error) {
           setError(err.message);
@@ -94,7 +94,7 @@ const HomePage: React.FC = () => {
       keywords="Pokemon, Battle, Trade, Catch, Serena"
       viewport="width=device-width, initial-scale=1.0"
     >
-      <div className="relative w-full h-[400px] md:h-[1080px] overflow-hidden">
+      <div className="relative w-full h-[300px] md:h-[845px] overflow-hidden">
         <div
           className="flex transition-transform duration-500 ease-in-out"
           style={{ transform: `translateX(-${currentSlide * 100}%)` }}
@@ -135,9 +135,10 @@ const HomePage: React.FC = () => {
         </button>
       </div>
 
-      <div className="mt-8">
-        <h2 className="text-2xl font-bold mb-4">Featured Cards</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+      <div className="mt-4">
+        {" "}
+        {/* Reduced margin-top */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           {loadingCards ? (
             <div>Loading cards...</div>
           ) : error ? (
@@ -166,46 +167,48 @@ const HomePage: React.FC = () => {
             ))
           )}
         </div>
-
-        <h2 className="text-2xl font-bold mt-8 mb-4">Featured Backgrounds</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {loadingBackgrounds ? (
-            <div>Loading backgrounds...</div>
-          ) : error ? (
-            <div className="text-red-500">{error}</div>
-          ) : (
-            backgrounds.map((background) => (
-              <div
-                key={background.url}
-                className="card flex flex-col items-center relative bg-white p-4 rounded-xl shadow-lg hover:scale-105 transition-transform hover:shadow-[0_10px_15px_rgba(0,0,0,0.3)]"
-              >
-                <div className="relative group">
-                  <img
-                    src={background.url}
-                    alt={background.description}
-                    className="w-full h-[250px] object-cover rounded-md"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 flex justify-center items-center flex-col text-white transition-opacity duration-500">
-                    <p className="text-lg text-center px-4">
-                      {background.description}
-                    </p>
-                    <p className="text-xl font-bold mt-2">
-                      {background.price} SRX
-                    </p>
+        <div className="mt-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-8">
+            {" "}
+            {/* Changed to md:grid-cols-2 for backgrounds */}
+            {loadingBackgrounds ? (
+              <div>Loading backgrounds...</div>
+            ) : error ? (
+              <div className="text-red-500">{error}</div>
+            ) : (
+              backgrounds.map((background) => (
+                <div
+                  key={background.url}
+                  className="card flex flex-col items-center relative bg-white p-4 rounded-xl shadow-lg hover:scale-105 transition-transform hover:shadow-[0_10px_15px_rgba(0,0,0,0.3)]"
+                >
+                  <div className="relative group">
+                    <img
+                      src={background.url}
+                      alt={background.description}
+                      className="w-full h-[250px] object-cover rounded-md"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 flex justify-center items-center flex-col text-white transition-opacity duration-500">
+                      <p className="text-lg text-center px-4">
+                        {background.description}
+                      </p>
+                      <p className="text-xl font-bold mt-2">
+                        {background.price} SRX
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))
-          )}
+              ))
+            )}
+          </div>
         </div>
-
-        <div className="flex justify-center items-center mt-8">
+        <div className="flex justify-center items-center mt-4">
+          {/* Reduced margin-top */}
           <Link
             to="/appearance"
-            className="text-white bg-black px-6 py-2 rounded-full text-lg font-semibold flex items-center gap-2"
+            className="text-black text-lg font-semibold flex items-center gap-2 hover:text-gray-700 transition duration-300"
           >
-            View More <FaArrowRight />
+            View More <FaArrowRight className="transform scale-110" />
           </Link>
         </div>
       </div>

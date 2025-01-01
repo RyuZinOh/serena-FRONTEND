@@ -30,7 +30,8 @@ const Ccomp: React.FC = () => {
         const data = await response.json();
         setCards(data.cards);
       } catch (err: unknown) {
-        const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
+        const errorMessage =
+          err instanceof Error ? err.message : "An unknown error occurred";
         setError(errorMessage);
       } finally {
         setLoading(false);
@@ -59,7 +60,7 @@ const Ccomp: React.FC = () => {
   };
 
   return (
-    <div className="p-8">
+    <div className="pt-0 px-0">
       {error ? (
         <div className="text-center text-red-500">
           <p>{error}</p>
@@ -77,7 +78,6 @@ const Ccomp: React.FC = () => {
         </div>
       ) : (
         <section>
-          <h2 className="text-2xl font-bold mb-4">Cards</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {currentItems.map((image) => (
               <div

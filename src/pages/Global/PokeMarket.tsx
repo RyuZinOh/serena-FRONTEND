@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Layout from "../../components/Layout/Layout";
 import { toast } from "react-toastify";
 import useAuth from "../../context/useAuth";
+import { FaSearch } from "react-icons/fa";
 
 interface Pokemon {
   _id: string;
@@ -62,13 +63,13 @@ const MarketSection: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    setFilteredPokemons(
-      searchQuery.trim()
-        ? pokemons.filter((pokemon) =>
-            pokemon.name.toLowerCase().includes(searchQuery.toLowerCase())
-          )
-        : pokemons
-    );
+    const filtered = searchQuery.trim()
+      ? pokemons.filter((pokemon) =>
+          pokemon.name.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      : pokemons;
+    setFilteredPokemons(filtered);
+    setCurrentPage(1); 
   }, [searchQuery, pokemons]);
 
   const handleBuyClick = async (pokemonId: string) => {
@@ -115,7 +116,7 @@ const MarketSection: React.FC = () => {
           key={index}
           className="card flex flex-col items-center bg-gray-100 p-4 rounded-xl shadow-lg animate-pulse"
         >
-          <div className="card-img-wrapper w-full h-56 bg-gray-300 rounded-md mb-4"></div>
+          <div className="card-img-wrapper w-full h-72 bg-gray-300 rounded-md mb-4"></div>
           <div className="h-4 bg-gray-300 w-3/4 rounded mb-2"></div>
           <div className="h-4 bg-gray-300 w-1/2 rounded mb-4"></div>
           <div className="h-4 bg-gray-300 w-full rounded"></div>
@@ -130,30 +131,17 @@ const MarketSection: React.FC = () => {
         <div className="text-center text-red-500 mt-8">{error}</div>
       ) : (
         <div className="text-center p-8">
-          {/* New Search Bar Design */}
-          <div className="p-5 overflow-hidden w-[60px] h-[60px] hover:w-[270px] bg-white dark:bg-black shadow-[2px_2px_20px_rgba(0,0,0,0.08)] rounded-full flex group items-center hover:duration-300 duration-300 mx-auto mb-8 border-2 border-black dark:border-white">
-            <div className="flex items-center justify-center text-black dark:text-white">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                id="Isolation_Mode"
-                data-name="Isolation Mode"
-                viewBox="0 0 24 24"
-                width="22"
-                height="22"
-              >
-                <path d="M18.9,16.776A10.539,10.539,0,1,0,16.776,18.9l5.1,5.1L24,21.88ZM10.5,18A7.5,7.5,0,1,1,18,10.5,7.507,7.507,0,0,1,10.5,18Z"></path>
-              </svg>
-            </div>
+          <div className="relative mb-8 w-[90%] sm:w-[60%] mx-auto">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="outline-none text-[20px] bg-transparent w-full text-black dark:text-white font-normal px-4"
+              className="w-full p-3 pl-12 border rounded-xl shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Search Pokémon"
             />
+            <FaSearch className="absolute left-4 top-3 text-gray-500" />
           </div>
 
-          {/* Pokémon Cards */}
           {loading ? (
             renderSkeletons(4)
           ) : (
@@ -166,7 +154,7 @@ const MarketSection: React.FC = () => {
                     key={pokemon._id}
                     className="card flex flex-col items-center bg-white p-4 rounded-xl shadow-lg"
                   >
-                    <div className="card-img-wrapper w-full h-56 mb-4 overflow-hidden">
+                    <div className="card-img-wrapper w-full h-72 mb-4 overflow-hidden">
                       <img
                         src={`data:${pokemon.image.contentType};base64,${pokemon.image.data}`}
                         alt={pokemon.name}
@@ -216,7 +204,6 @@ const MarketSection: React.FC = () => {
             </div>
           )}
 
-          {/* Pagination */}
           <div className="flex justify-center mt-8">
             <button
               onClick={() => handlePageChange(currentPage - 1)}
