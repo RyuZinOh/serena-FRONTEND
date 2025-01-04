@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import useAuth from "../../context/useAuth";
 
 const Bcomp: React.FC = () => {
   interface BackgroundImage {
@@ -10,10 +13,12 @@ const Bcomp: React.FC = () => {
     price: string;
   }
 
+  const [authState] = useAuth();
   const [backgrounds, setBackgrounds] = useState<BackgroundImage[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [currentPage, setCurrentPage] = useState(1);
+
   const itemsPerPage = 8;
 
   useEffect(() => {
@@ -31,9 +36,10 @@ const Bcomp: React.FC = () => {
         const data = await response.json();
         setBackgrounds(data.backgrounds);
       } catch (err: unknown) {
-        const errorMessage =
-          err instanceof Error ? err.message : "An unknown error occurred";
-        setError(errorMessage);
+        setError(
+          err instanceof Error ? err.message : "An unknown error occurred"
+        );
+        toast.error("Failed to load backgrounds!");
       } finally {
         setLoading(false);
       }
@@ -41,6 +47,39 @@ const Bcomp: React.FC = () => {
 
     fetchBackgrounds();
   }, []);
+
+  const handleBuyBackground = async (backgroundName: string) => {
+    try {
+      const token = authState.token;
+      if (!token) {
+        toast.error("Authentication token is missing!");
+        return;
+      }
+
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_API_BASE_URL
+        }/kamehameha/buy_background/${backgroundName}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const result = await response.json();
+
+      if (response.ok) {
+        toast.success(`Background "${backgroundName}" purchased successfully!`);
+      } else {
+        toast.error(result.message || "Purchase failed!");
+      }
+    } catch {
+      toast.error("An error occurred during the purchase.");
+    }
+  };
 
   const totalPages = Math.ceil(backgrounds.length / itemsPerPage);
   const currentItems = backgrounds.slice(
@@ -62,13 +101,16 @@ const Bcomp: React.FC = () => {
 
   return (
     <div className="p-0">
+      {/* Toast Container */}
+      <ToastContainer position="top-right" autoClose={3000} />
+
       {error ? (
         <div className="text-center text-red-500">
           <p>{error}</p>
         </div>
       ) : loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-8">
-          {Array.from({ length: 8 }).map((_, index) => (
+          {Array.from({ length: itemsPerPage }).map((_, index) => (
             <div
               key={index}
               className="flex flex-col items-center bg-gray-100 p-4 rounded-xl shadow-lg animate-pulse"
@@ -97,6 +139,12 @@ const Bcomp: React.FC = () => {
                       {image.description}
                     </p>
                     <p className="text-xl font-bold mt-2">{image.price} SRX</p>
+                    <button
+                      className="mt-4 py-2 px-6 bg-black bg-opacity-70 text-white font-semibold text-lg rounded-full shadow-md hover:bg-opacity-90 hover:scale-105 transition-transform duration-300"
+                      onClick={() => handleBuyBackground(image.name)}
+                    >
+                      Buy Now
+                    </button>
                   </div>
                 </div>
               </div>

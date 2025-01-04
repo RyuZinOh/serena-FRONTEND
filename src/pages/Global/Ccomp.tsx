@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import useAuth from "../../context/useAuth";
 
 interface Image {
   url: string;
   description: string;
   price: string;
+  name: string;
 }
 
 const Ccomp: React.FC = () => {
@@ -15,6 +19,9 @@ const Ccomp: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 8;
 
+  const [authState] = useAuth();
+  const token = authState.token;
+
   useEffect(() => {
     const fetchCards = async () => {
       setLoading(true);
@@ -22,22 +29,17 @@ const Ccomp: React.FC = () => {
         const response = await fetch(
           `${import.meta.env.VITE_API_BASE_URL}/kamehameha/card`
         );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch cards");
-        }
-
+        if (!response.ok) throw new Error("Failed to fetch cards");
         const data = await response.json();
         setCards(data.cards);
       } catch (err: unknown) {
-        const errorMessage =
-          err instanceof Error ? err.message : "An unknown error occurred";
-        setError(errorMessage);
+        setError(
+          err instanceof Error ? err.message : "An unknown error occurred"
+        );
       } finally {
         setLoading(false);
       }
     };
-
     fetchCards();
   }, []);
 
@@ -47,15 +49,33 @@ const Ccomp: React.FC = () => {
     currentPage * itemsPerPage
   );
 
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
+  const handleNextPage = () =>
+    currentPage < totalPages && setCurrentPage(currentPage + 1);
+  const handlePrevPage = () =>
+    currentPage > 1 && setCurrentPage(currentPage - 1);
 
-  const handlePrevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
+  const handleBuyCard = async (cardName: string) => {
+    if (!token) return toast.error("You must be logged in to purchase a card!");
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/kamehameha/buy_card/${cardName}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to purchase card.");
+      }
+      toast.success("Card purchased successfully!");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "An unknown error occurred"
+      );
     }
   };
 
@@ -91,8 +111,6 @@ const Ccomp: React.FC = () => {
                     className="w-full h-120 object-cover rounded-md"
                     loading="lazy"
                   />
-
-                  {/* Description and Price - Show on Hover */}
                   <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 flex justify-center items-center flex-col text-white transition-opacity duration-500">
                     <p className="text-md sm:text-lg md:text-xl text-center px-4 transform scale-95 group-hover:scale-100 transition-transform duration-500">
                       {image.description}
@@ -100,6 +118,12 @@ const Ccomp: React.FC = () => {
                     <p className="text-lg sm:text-xl md:text-2xl font-bold mt-2 transform scale-95 group-hover:scale-100 transition-transform duration-500">
                       {image.price} SRX
                     </p>
+                    <button
+                      className="mt-4 px-6 py-2 bg-transparent border border-black text-white font-bold rounded-md hover:bg-black hover:bg-opacity-60 transition-all"
+                      onClick={() => handleBuyCard(image.name)}
+                    >
+                      Buy
+                    </button>
                   </div>
                 </div>
               </div>
