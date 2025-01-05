@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { FaTrashAlt, FaCamera, FaUserAlt } from "react-icons/fa";
+import {
+  FaTrashAlt,
+  FaCamera,
+  FaUserAlt,
+  FaBars,
+  FaTimes,
+} from "react-icons/fa";
 import Layout from "../../components/Layout/Layout";
 import { toast } from "react-toastify";
 import useAuth from "../../context/useAuth";
@@ -12,6 +18,7 @@ const Settings: React.FC = () => {
   const [profilePic, setProfilePic] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (auth.token) {
@@ -100,8 +107,34 @@ const Settings: React.FC = () => {
       viewport="width=device-width, initial-scale=1.0"
     >
       <div className="flex h-screen bg-gray-50">
-        <UserMenu />
-        <div className="flex-1 p-8 md:p-16">
+        <div
+          className={`fixed top-0 left-0 text-white w-64 h-full transition-transform transform ${
+            isMenuOpen ? "translate-x-0" : "-translate-x-full"
+          } md:translate-x-0 md:relative md:w-90 overflow-hidden z-50 sm:z-50 md:z-40`}
+        >
+          <button
+            className="md:hidden absolute top-4 right-4 text-black text-2xl"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            <FaTimes />
+          </button>
+          <UserMenu />
+        </div>
+
+        <div
+          className={`flex-0 p-1 overflow-hidden ${
+            isMenuOpen ? "overflow-hidden" : "overflow-auto"
+          }`}
+        >
+          <div className="block md:hidden mb-4">
+            <button
+              className="text-black text-xl"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? <FaTimes /> : <FaBars />}
+            </button>
+          </div>
+
           <h1 className="text-4xl font-semibold mb-8 text-gray-800">
             Profile Settings
           </h1>

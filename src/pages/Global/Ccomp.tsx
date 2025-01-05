@@ -8,7 +8,7 @@ import useAuth from "../../context/useAuth";
 interface Image {
   url: string;
   description: string;
-  price: string;
+  price: number;
   name: string;
 }
 
@@ -17,7 +17,7 @@ const Ccomp: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const itemsPerPage = 8;
+  const itemsPerPage = 8; // Update to 8 per page
 
   const [authState] = useAuth();
   const token = authState.token;
@@ -80,21 +80,26 @@ const Ccomp: React.FC = () => {
   };
 
   return (
-    <div className="pt-0 px-0">
+    <div className="pt-0 px-4">
       {error ? (
         <div className="text-center text-red-500">
           <p>{error}</p>
         </div>
       ) : loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {Array.from({ length: 8 }).map((_, index) => (
-            <div
-              key={index}
-              className="card flex flex-col items-center bg-gray-100 p-4 rounded-xl shadow-lg animate-pulse"
-            >
-              <Skeleton height={200} width="100%" />
-            </div>
-          ))}
+          {Array.from({ length: 8 }).map(
+            (
+              _,
+              index // Change skeleton items to 8
+            ) => (
+              <div
+                key={index}
+                className="card flex flex-col items-center bg-gray-100 p-4 rounded-xl shadow-md"
+              >
+                <Skeleton height={200} width="100%" />
+              </div>
+            )
+          )}
         </div>
       ) : (
         <section>
@@ -102,53 +107,47 @@ const Ccomp: React.FC = () => {
             {currentItems.map((image) => (
               <div
                 key={image.url}
-                className="card flex flex-col items-center bg-white p-4 rounded-xl shadow-lg hover:scale-105 transition-transform hover:shadow-[0_10px_15px_rgba(0,0,0,0.3)] relative"
+                className="bg-white rounded-xl shadow-lg overflow-hidden group relative"
               >
-                <div className="relative group">
-                  <img
-                    src={image.url}
-                    alt="Card"
-                    className="w-full h-120 object-cover rounded-md"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 flex justify-center items-center flex-col text-white transition-opacity duration-500">
-                    <p className="text-md sm:text-lg md:text-xl text-center px-4 transform scale-95 group-hover:scale-100 transition-transform duration-500">
-                      {image.description}
-                    </p>
-                    <p className="text-lg sm:text-xl md:text-2xl font-bold mt-2 transform scale-95 group-hover:scale-100 transition-transform duration-500">
-                      {image.price} SRX
-                    </p>
-                    <button
-                      className="mt-4 px-6 py-2 bg-transparent border border-black text-white font-bold rounded-md hover:bg-black hover:bg-opacity-60 transition-all"
-                      onClick={() => handleBuyCard(image.name)}
-                    >
-                      Buy
-                    </button>
-                  </div>
+                <img
+                  src={image.url}
+                  alt={image.description}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 flex justify-center items-center flex-col text-white transition-opacity duration-500">
+                  <p className="text-lg text-center px-4">
+                    {image.description}
+                  </p>
+                  <p className="text-xl font-bold mt-2">{image.price} SRX</p>
+                  <button
+                    className="mt-4 px-6 py-2 bg-black text-white font-semibold rounded-md"
+                    onClick={() => handleBuyCard(image.name)}
+                  >
+                    Buy
+                  </button>
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="flex justify-between mt-4">
+          <div className="flex justify-between items-center mt-6">
             <button
               onClick={handlePrevPage}
               disabled={currentPage === 1}
-              className="btn btn-primary flex items-center gap-2"
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md disabled:opacity-50"
             >
-              <FaArrowLeft />
-              Previous
+              <FaArrowLeft /> Previous
             </button>
-            <span>
+            <span className="text-gray-600">
               Page {currentPage} of {totalPages}
             </span>
             <button
               onClick={handleNextPage}
               disabled={currentPage === totalPages}
-              className="btn btn-primary flex items-center gap-2"
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md disabled:opacity-50"
             >
-              Next
-              <FaArrowRight />
+              Next <FaArrowRight />
             </button>
           </div>
         </section>

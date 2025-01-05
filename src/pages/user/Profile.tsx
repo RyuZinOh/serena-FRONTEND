@@ -4,16 +4,16 @@ import UserMenu from "../../components/Layout/UserMenu";
 import axios from "axios";
 import useAuth from "../../context/useAuth";
 import Cookies from "js-cookie";
-import { FaSearch } from "react-icons/fa";
-import { FaSpinner } from "react-icons/fa";
+import { FaBars, FaTimes, FaSpinner } from "react-icons/fa";
+
 
 const Profile: React.FC = () => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [cookieConsent, setCookieConsent] = useState<boolean>(false);
-  const [searchQuery, setSearchQuery] = useState<string>("");
   const [syncing, setSyncing] = useState<boolean>(false);
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
   const [authState] = useAuth();
   const token = authState.token;
@@ -86,10 +86,6 @@ const Profile: React.FC = () => {
     setCookieConsent(true);
   };
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(event.target.value);
-  };
-
   return (
     <Layout
       title="Profile - Serena"
@@ -99,32 +95,57 @@ const Profile: React.FC = () => {
       viewport="width=device-width, initial-scale=1.0"
     >
       <div className="flex h-screen bg-white">
-        <div className="w-1/4">
+        {/* Sidebar */}
+        <div
+          className={`fixed top-0 left-0 text-white h-full transition-transform transform ${
+            isMenuOpen ? "translate-x-0" : "-translate-x-full"
+          }  md:translate-x-0 md:relative md:w-90 overflow-hidden z-50 sm:z-50 md:z-40`}
+        >
+          <button
+            className="md:hidden absolute top-4 right-4 text-black text-2xl"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            <FaTimes />
+          </button>
           <UserMenu />
         </div>
-        <div className="w-3/4 p-5 pt-12 mr-60">
-          <div className="flex justify-center items-center h-64">
-            {loading && !profileImage && !syncing ? (
-              <span className="text-lg text-gray-500">
-                Generating profile image...
-              </span>
-            ) : error ? (
-              <span className="text-lg text-red-500">{error}</span>
-            ) : profileImage ? (
-              <div>
-                <img
-                  src={profileImage}
-                  alt="Generated Profile"
-                  className="rounded-lg shadow-lg"
-                  style={{
-                    width: "140%",
-                    maxWidth: "1000px",
-                    marginTop: "400px",
-                  }}
-                />
+
+        {/* Main Content */}
+        <div
+          className={`flex-1 p-6 ${
+            isMenuOpen ? "overflow-hidden" : "overflow-auto"
+          }`}
+        >
+          {/* Mobile Sidebar Toggle Button */}
+          <div className="block md:hidden mb-4">
+            <button
+              className="text-black text-xl"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? <FaTimes /> : <FaBars />}
+            </button>
+          </div>
+
+          {/* Profile Content */}
+          <h1 className="text-2xl font-semibold mb-4">User Profile</h1>
+
+          {loading && !profileImage && !syncing ? (
+            <span className="text-lg text-gray-500">
+              Generating profile image...
+            </span>
+          ) : error ? (
+            <span className="text-lg text-red-500">{error}</span>
+          ) : profileImage ? (
+            <div className="flex justify-start items-center flex-col md:flex-row">
+              <img
+                src={profileImage}
+                alt="Generated Profile"
+                className="rounded-lg shadow-lg w-full sm:w-3/4 md:w-1/2 lg:w-4/5 m-auto mb-6 p-2"
+              />
+              <div className="md:ml-4 flex flex-col justify-center items-start">
                 <button
                   onClick={syncData}
-                  className="mt-4 bg-black text-white px-4 py-2 rounded flex items-center justify-center"
+                  className="bg-black text-white px-6 py-2 rounded flex items-center justify-center"
                   disabled={syncing}
                 >
                   {syncing ? (
@@ -134,13 +155,14 @@ const Profile: React.FC = () => {
                   )}
                 </button>
               </div>
-            ) : (
-              <span className="text-lg text-gray-500">
-                No profile generated yet
-              </span>
-            )}
-          </div>
+            </div>
+          ) : (
+            <span className="text-lg text-gray-500">
+              No profile generated yet
+            </span>
+          )}
 
+          {/* Cookie Consent Banner */}
           {!cookieConsent && !Cookies.get("cookie_consent") && (
             <div className="fixed bottom-0 left-0 w-full bg-black text-white py-4 px-6 flex justify-between items-center">
               <p className="text-sm">
@@ -155,19 +177,6 @@ const Profile: React.FC = () => {
               </button>
             </div>
           )}
-        </div>
-
-        <div className="w-2/6 p-6 pt-12 bg-white border-l border-gray-300">
-          <div className="flex items-center border rounded-lg p-2 bg-white shadow-lg hover:shadow-xl transition-all duration-300">
-            <FaSearch className="text-gray-500 mr-2" />
-            <input
-              type="text"
-              placeholder="Search Users..."
-              value={searchQuery}
-              onChange={handleSearchChange}
-              className="w-full bg-transparent border-none focus:outline-none text-gray-700"
-            />
-          </div>
         </div>
       </div>
     </Layout>

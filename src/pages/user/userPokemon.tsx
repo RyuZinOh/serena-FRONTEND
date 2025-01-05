@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
+import useAuth from "../../context/useAuth";
 import Layout from "../../components/Layout/Layout";
 import UserMenu from "../../components/Layout/UserMenu";
-import useAuth from "../../context/useAuth";
-import { FaMinusCircle } from "react-icons/fa";
+import { FaBars, FaMinusCircle, FaTimes } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -32,47 +32,67 @@ interface PokemonResponse {
   }[];
 }
 
+interface PokemonState {
+  data: PokemonResponse["pokemons"] | null;
+  loading: boolean;
+  error: string | null;
+}
+
 const UserPokemon: React.FC = () => {
   const [auth] = useAuth();
-  const [pokemons, setPokemons] = useState<PokemonResponse["pokemons"]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [pokemonState, setPokemonState] = useState<PokemonState>({
+    data: null,
+    loading: true,
+    error: null,
+  });
+
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+
+  const greeting = useMemo(() => {
+    return auth.user ? `Hello, ${auth.user.name}!` : "Loading user info...";
+  }, [auth.user]);
+
+  const fetchPokemons = useCallback(async () => {
+    if (auth.user && auth.token) {
+      setPokemonState({ data: null, loading: true, error: null });
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_BASE_URL}/user/${auth.user.id}/pokemons`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `${auth.token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            throw new Error("Unauthorized! Please log in again.");
+          } else if (response.status === 403) {
+            throw new Error("You do not have access to this resource.");
+          } else {
+            throw new Error("An error occurred while fetching Pokémon data.");
+          }
+        }
+
+        const data: PokemonResponse = await response.json();
+        setPokemonState({ data: data.pokemons, loading: false, error: null });
+      } catch (error) {
+        setPokemonState({
+          data: null,
+          loading: false,
+          error: (error as Error).message,
+        });
+      }
+    }
+  }, [auth.user, auth.token]);
 
   useEffect(() => {
-    const fetchPokemons = async () => {
-      if (auth.user && auth.token) {
-        setLoading(true);
-        try {
-          const response = await fetch(
-            `${import.meta.env.VITE_API_BASE_URL}/user/${
-              auth.user.id
-            }/pokemons`,
-            {
-              method: "GET",
-              headers: {
-                Authorization: `${auth.token}`,
-              },
-            }
-          );
-
-          if (!response.ok) {
-            throw new Error("Failed to fetch Pokemons");
-          }
-
-          const data: PokemonResponse = await response.json();
-          setPokemons(data.pokemons || []);
-        } catch (err) {
-          setError(
-            err instanceof Error ? err.message : "Unexpected error occurred."
-          );
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
-
     fetchPokemons();
-  }, [auth.user, auth.token]);
+  }, [fetchPokemons]);
+
+  const { data: pokemons, loading, error } = pokemonState;
 
   const deletePokemon = async (pokemonId: string) => {
     if (auth.user && auth.token) {
@@ -90,9 +110,12 @@ const UserPokemon: React.FC = () => {
         );
 
         if (response.ok) {
-          setPokemons((prevPokemons) =>
-            prevPokemons.filter((pokemon) => pokemon._id !== pokemonId)
-          );
+          setPokemonState((prevState) => ({
+            ...prevState,
+            data: prevState.data ? prevState.data.filter(
+              (pokemon) => pokemon._id !== pokemonId
+            ) : null,
+          }));
           toast.success("Pokemon deleted successfully!", {
             position: "top-right",
             autoClose: 3000,
@@ -129,15 +152,47 @@ const UserPokemon: React.FC = () => {
       viewport="width=device-width, initial-scale=1.0"
     >
       <div className="flex h-screen bg-white">
-        <UserMenu />
-        <div className="w-3/4 p-6">
+        {/* Sidebar */}
+        <div
+          className={`fixed top-0 left-0 text-white w-64 h-full transition-transform transform ${
+            isMenuOpen ? "translate-x-0" : "-translate-x-full"
+          } md:translate-x-0 md:relative  overflow-hidden z-50 sm:z-50 md:z-40 md:w-90`}
+        >
+          <button
+            className="md:hidden absolute top-4 right-4 text-black text-2xl"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            <FaTimes />
+          </button>
+          <UserMenu />
+        </div>
+
+        {/* Main content */}
+        <div
+          className={`flex-1 p-5 ${
+            isMenuOpen ? "overflow-hidden" : "overflow-auto"
+          }`}
+        >
+          {/* Mobile Hamburger Menu Icon */}
+          <div className="block md:hidden mb-4">
+            <button
+              className="text-black text-xl"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? <FaTimes /> : <FaBars />}
+            </button>
+          </div>
+
           <h1 className="text-2xl font-semibold mb-4">Your Pokemon</h1>
-          <p>Here you can view and manage your Pokémon collection.</p>
+          <p>{greeting}</p>
 
           {loading && (
-            <p className="text-gray-500 text-sm">Loading Pokemons...</p>
+            <div className="flex justify-center items-center py-10">
+              <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            </div>
           )}
-          {error && <p className="text-red-500 text-sm">Error: {error}</p>}
+
+          {error && <p className="text-red-500 text-sm">{error}</p>}
 
           <div className="overflow-x-auto shadow-lg rounded-lg">
             <table className="min-w-full bg-white table-auto border-separate border-spacing-1">
@@ -165,7 +220,7 @@ const UserPokemon: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {pokemons.map((pokemon) => (
+                {pokemons?.map((pokemon) => (
                   <tr key={pokemon._id} className="hover:bg-gray-50">
                     <td className="px-4 py-2">
                       <img
@@ -211,10 +266,10 @@ const UserPokemon: React.FC = () => {
               </tbody>
             </table>
           </div>
+
+          <ToastContainer />
         </div>
       </div>
-
-      <ToastContainer />
     </Layout>
   );
 };

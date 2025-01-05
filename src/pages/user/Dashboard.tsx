@@ -1,10 +1,12 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import Layout from "../../components/Layout/Layout";
 import UserMenu from "../../components/Layout/UserMenu";
 import useAuth from "../../context/useAuth";
+import { FaBars, FaTimes } from "react-icons/fa";
 
 const Dashboard: React.FC = () => {
   const [auth] = useAuth();
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
   const greeting = useMemo(() => {
     return auth.user ? `Hello, ${auth.user.name}!` : "Loading user info...";
@@ -23,8 +25,36 @@ const Dashboard: React.FC = () => {
       viewport="width=device-width, initial-scale=1.0"
     >
       <div className="flex h-screen bg-white">
-        <UserMenu />
-        <div className="w-3/4 p-6">
+        {/* Sidebar menu */}
+        <div
+          className={`fixed top-0 left-0 text-white h-full transition-transform transform ${
+            isMenuOpen ? "translate-x-0" : "-translate-x-full"
+          } md:translate-x-0 md:relative sm:z-50 md:z-10 z-50`}
+        >
+          <button
+            className="md:hidden absolute top-4 right-4 text-black text-2xl"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            <FaTimes />
+          </button>
+          <UserMenu />
+        </div>
+
+        {/* Main content */}
+        <div
+          className={`flex-1 p-6 ${
+            isMenuOpen ? "overflow-hidden" : "overflow-auto"
+          }`}
+        >
+          <div className="block md:hidden mb-4">
+            <button
+              className="text-black text-xl"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? <FaTimes /> : <FaBars />}
+            </button>
+          </div>
+
           <h1 className="text-2xl font-semibold mb-4">
             Welcome to Your Dashboard
           </h1>
@@ -48,9 +78,7 @@ const Dashboard: React.FC = () => {
             </div>
           </div>
 
-          <p>
-            Here you can manage your account, view your Pokémon, and more.
-          </p>
+          <p>Here you can manage your account, view your Pokémon, and more.</p>
         </div>
       </div>
     </Layout>

@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback, useMemo } from "react";
 import useAuth from "../../context/useAuth";
 import Layout from "../../components/Layout/Layout";
 import UserMenu from "../../components/Layout/UserMenu";
+import { FaBars, FaTimes } from "react-icons/fa";
 
 interface CurrencyData {
   coin_name: string;
@@ -21,6 +22,8 @@ const Currency: React.FC = () => {
     loading: true,
     error: null,
   });
+
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
   const greeting = useMemo(() => {
     return auth.user ? `Hello, ${auth.user.name}!` : "Loading user info...";
@@ -79,8 +82,36 @@ const Currency: React.FC = () => {
       viewport="width=device-width, initial-scale=1.0"
     >
       <div className="flex h-screen bg-white">
-        <UserMenu />
-        <div className="w-3/4 p-6">
+        {/* Sidebar menu */}
+        <div
+          className={`fixed top-0 left-0 text-white w-64 h-full transition-transform transform ${
+            isMenuOpen ? "translate-x-0" : "-translate-x-full"
+          } md:translate-x-0 md:relative md:w-90 overflow-hidden z-50 sm:z-50 md:z-40`}
+        >
+          <button
+            className="md:hidden absolute top-4 right-4 text-black text-2xl"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            <FaTimes />
+          </button>
+          <UserMenu />
+        </div>
+
+        {/* Main content */}
+        <div
+          className={`flex-1 p-5 ${
+            isMenuOpen ? "overflow-hidden" : "overflow-auto"
+          }`}
+        >
+          <div className="block md:hidden mb-4">
+            <button
+              className="text-black text-xl"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? <FaTimes /> : <FaBars />}
+            </button>
+          </div>
+
           <h1 className="text-2xl font-semibold mb-4">Serenex Wallet</h1>
           <p className="text-lg mb-6">{greeting}</p>
 

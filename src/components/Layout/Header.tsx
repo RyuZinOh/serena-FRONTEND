@@ -14,7 +14,6 @@ const Header: React.FC = () => {
   const isLoggedIn = !!auth?.user;
   const username = auth?.user?.name || "User";
 
-  // Fetch profile picture using the auth token
   useEffect(() => {
     if (auth.token) {
       axios
@@ -97,7 +96,6 @@ const Header: React.FC = () => {
               ))}
             </div>
 
-            {/* User Profile & Logout */}
             <div className="flex items-center space-x-4 ml-auto">
               {!isLoggedIn ? (
                 <button
@@ -120,17 +118,17 @@ const Header: React.FC = () => {
                     <span className="font-medium">{username}</span>
                   </div>
                   {isDropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-48 bg-gray-800 text-white rounded-lg shadow-lg z-60">
+                    <div className="absolute right-0 mt-2 w-48 bg-black text-white rounded-lg shadow-lg z-60">
                       <ul>
                         <li
                           onClick={handleDashboardRedirect}
-                          className="px-4 py-2 hover:bg-gray-700 cursor-pointer"
+                          className="px-4 py-2 hover:text-golden cursor-pointer"
                         >
                           Dashboard
                         </li>
                         <li
                           onClick={handleLogout}
-                          className="px-4 py-2 hover:bg-gray-700 cursor-pointer text-red-400"
+                          className="px-4 py-2 hover:text-red-500 cursor-pointer text-white"
                         >
                           Logout
                         </li>
@@ -144,13 +142,12 @@ const Header: React.FC = () => {
         </div>
       </nav>
 
-      {/* Mobile Menu */}
       <div
-        className={`fixed top-0 left-0 w-3/4 h-full bg-black text-white transition-transform transform ${
+        className={`fixed top-0 left-0 w-2/3 h-full bg-black text-white transition-transform transform ${
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         } lg:hidden z-50`}
       >
-        <div className="flex flex-col items-center py-10 mt-8">
+        <div className="flex flex-col items-start py-10 mt-8 ml-4">
           <button
             onClick={toggleMobileMenu}
             className="absolute top-4 left-4 text-white text-3xl"
@@ -172,7 +169,6 @@ const Header: React.FC = () => {
           ))}
         </div>
 
-        {/* GitHub Link at the Bottom */}
         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-50">
           <a
             href="https://github.com/RyuZinOh"

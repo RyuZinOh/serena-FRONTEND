@@ -4,7 +4,7 @@ import UserMenu from "../../components/Layout/UserMenu";
 import InfoMenu from "../../components/Layout/InfoMenu";
 import { toast } from "react-toastify";
 import useAuth from "../../context/useAuth";
-import { FaSearch } from "react-icons/fa";
+import { FaSearch, FaBars, FaTimes } from "react-icons/fa";
 
 interface Stats {
   attack: number;
@@ -33,6 +33,7 @@ const YourCustomPoke: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredPokemons, setFilteredPokemons] = useState<Pokemon[]>([]);
   const [selectedPokemon, setSelectedPokemon] = useState<Pokemon | null>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
   const [auth] = useAuth();
   const token = auth?.token;
@@ -93,11 +94,34 @@ const YourCustomPoke: React.FC = () => {
   return (
     <Layout title="Owned Pokemons - Serena" description="Your owned pokemons">
       <div className="flex h-screen bg-white">
-        <div className="flex h-screen bg-white">
+        <div
+          className={`fixed top-0 left-0 text-white w-64 h-full transition-transform transform ${
+            isMenuOpen ? "translate-x-0" : "-translate-x-full"
+          } md:translate-x-0 md:relative md:w-90 overflow-hidden z-50 sm:z-50 md:z-40`}
+        >
+          <button
+            className="md:hidden absolute top-4 right-4 text-black text-2xl"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            <FaTimes />
+          </button>
           <UserMenu />
         </div>
 
-        <div className="flex-1 p-6 overflow-y-auto">
+        <div
+          className={`flex-0 p-1 overflow-hidden ${
+            isMenuOpen ? "overflow-hidden" : "overflow-auto"
+          }`}
+        >
+          <div className="block md:hidden mb-4">
+            <button
+              className="text-black text-xl"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? <FaTimes /> : <FaBars />}
+            </button>
+          </div>
+
           <h1 className="text-2xl font-semibold mb-4">
             View Your Owned Pokemons
           </h1>
