@@ -21,12 +21,8 @@ const Header: React.FC = () => {
           headers: { Authorization: `${auth.token}` },
           responseType: "blob",
         })
-        .then((response) => {
-          setProfilePic(URL.createObjectURL(response.data));
-        })
-        .catch(() => {
-          setProfilePic(null);
-        });
+        .then((response) => setProfilePic(URL.createObjectURL(response.data)))
+        .catch(() => setProfilePic(null));
     }
   }, [auth.token]);
 
@@ -37,11 +33,7 @@ const Header: React.FC = () => {
   };
 
   const handleDashboardRedirect = () => {
-    if (auth?.user?.role === 1) {
-      navigate("/dashboard/admin");
-    } else {
-      navigate("/dashboard/user");
-    }
+    navigate(auth?.user?.role === 1 ? "/dashboard/admin" : "/dashboard/user");
   };
 
   const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
@@ -67,7 +59,6 @@ const Header: React.FC = () => {
           />
         </div>
       </div>
-
       <nav className="bg-black text-white shadow-lg sticky top-0 z-50">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center h-20">
@@ -79,7 +70,6 @@ const Header: React.FC = () => {
                 <Menu size={24} />
               </button>
             </div>
-
             <div className="hidden lg:flex space-x-4 sm:space-x-8 justify-start w-full">
               {navLinks.map(({ to, label }) => (
                 <NavLink
@@ -95,7 +85,6 @@ const Header: React.FC = () => {
                 </NavLink>
               ))}
             </div>
-
             <div className="flex items-center space-x-4 ml-auto">
               {!isLoggedIn ? (
                 <button
@@ -141,9 +130,8 @@ const Header: React.FC = () => {
           </div>
         </div>
       </nav>
-
       <div
-        className={`fixed top-0 left-0 w-2/3 h-full bg-black text-white transition-transform transform ${
+        className={`fixed top-0 left-0 w-1/2 h-full bg-black text-white rounded-r-2xl transition-transform transform ${
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         } lg:hidden z-50`}
       >
@@ -168,7 +156,6 @@ const Header: React.FC = () => {
             </NavLink>
           ))}
         </div>
-
         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-50">
           <a
             href="https://github.com/RyuZinOh"

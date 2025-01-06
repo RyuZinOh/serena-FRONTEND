@@ -70,9 +70,9 @@ const HomePage: React.FC = () => {
       <div className="mt-8 text-left">
         <h3 className="text-xl font-bold text-gray-800 mb-4">Trending Now</h3>
       </div>
-      <HomeCard startIndex={0} />
+      <HomeCard startIndex={1} />
       <HomeBg />
-      <HomeCard startIndex={5} />
+      <HomeCard startIndex={6} />
 
       <div className="flex justify-center items-center mt-4 mb-4">
         <Link
