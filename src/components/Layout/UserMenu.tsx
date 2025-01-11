@@ -35,99 +35,99 @@ const UserMenu: React.FC = () => {
   }, [auth.token]);
 
   return (
-    <div className="flex flex-col items-center bg-white text-black w-64 h-full p-6 shadow-xl border-2 border-gray-200 rounded-lg">
+    <div className="flex flex-col items-center bg-gray-50 text-gray-800 w-64 h-full p-6 shadow-md rounded-lg">
       <div className="flex flex-col items-center mb-6">
         <img
           src={profilePic || "https://picsum.photos/200"}
           alt="User Avatar"
-          className="w-24 h-24 rounded-full object-cover mb-3 shadow-lg border-4 border-indigo-200"
+          className="w-24 h-24 rounded-full object-cover mb-3 shadow-md"
         />
-        <span className="text-xl font-semibold text-gray-800">{username}</span>
+        <span className="text-xl font-semibold">{username}</span>
       </div>
 
-      <div className="space-y-6 w-full">
+      <div className="space-y-4 w-full">
         <NavLink
           to="/dashboard/user/pokemons"
           className={({ isActive }) =>
             `flex items-center p-3 rounded-lg text-sm font-medium ${
-              isActive ? "bg-indigo-200" : "hover:bg-gray-100"
-            } transition-all duration-200 ease-in-out shadow-sm hover:shadow-md border border-gray-200`
+              isActive ? "bg-indigo-100" : "hover:bg-indigo-200"
+            } transition-all duration-200 ease-in-out`
           }
         >
           <HiOutlineHome className="text-2xl mr-4" />
-          <span>My Pokemons</span>
+          <span>Pokemons</span>
         </NavLink>
 
         <NavLink
           to="/dashboard/user/currency"
           className={({ isActive }) =>
             `flex items-center p-3 rounded-lg text-sm font-medium ${
-              isActive ? "bg-indigo-200" : "hover:bg-gray-100"
-            } transition-all duration-200 ease-in-out shadow-sm hover:shadow-md border border-gray-200`
+              isActive ? "bg-indigo-100" : "hover:bg-indigo-200"
+            } transition-all duration-200 ease-in-out`
           }
         >
           <FaWallet className="text-2xl mr-4" />
-          <span>My Wallet</span>
+          <span>Currency</span>
         </NavLink>
 
         <NavLink
           to="/dashboard/user/trades"
           className={({ isActive }) =>
             `flex items-center p-3 rounded-lg text-sm font-medium ${
-              isActive ? "bg-indigo-200" : "hover:bg-gray-100"
-            } transition-all duration-200 ease-in-out shadow-sm hover:shadow-md border border-gray-200`
+              isActive ? "bg-indigo-100" : "hover:bg-indigo-200"
+            } transition-all duration-200 ease-in-out`
           }
         >
           <FaExchangeAlt className="text-2xl mr-4" />
-          <span>Trade Center</span>
+          <span>Trade Status</span>
         </NavLink>
 
         <NavLink
           to="/dashboard/user/profile"
           className={({ isActive }) =>
             `flex items-center p-3 rounded-lg text-sm font-medium ${
-              isActive ? "bg-indigo-200" : "hover:bg-gray-100"
-            } transition-all duration-200 ease-in-out shadow-sm hover:shadow-md border border-gray-200`
+              isActive ? "bg-indigo-100" : "hover:bg-indigo-200"
+            } transition-all duration-200 ease-in-out`
           }
         >
           <FaUserCircle className="text-2xl mr-4" />
-          <span>My Profile</span>
+          <span>Profile</span>
         </NavLink>
 
         <NavLink
           to="/dashboard/user/battles"
           className={({ isActive }) =>
             `flex items-center p-3 rounded-lg text-sm font-medium ${
-              isActive ? "bg-indigo-200" : "hover:bg-gray-100"
-            } transition-all duration-200 ease-in-out shadow-sm hover:shadow-md border border-gray-200`
+              isActive ? "bg-indigo-100" : "hover:bg-indigo-200"
+            } transition-all duration-200 ease-in-out`
           }
         >
           <FaTrophy className="text-2xl mr-4" />
-          <span>Battle Arena</span>
+          <span>War Status</span>
         </NavLink>
 
         <NavLink
           to="/dashboard/user/owned"
           className={({ isActive }) =>
             `flex items-center p-3 rounded-lg text-sm font-medium ${
-              isActive ? "bg-indigo-200" : "hover:bg-gray-100"
-            } transition-all duration-200 ease-in-out shadow-sm hover:shadow-md border border-gray-200`
+              isActive ? "bg-indigo-100" : "hover:bg-indigo-200"
+            } transition-all duration-200 ease-in-out`
           }
         >
           <FaPaw className="text-2xl mr-4" />
-          <span>My Pets</span>
+          <span>Owned</span>
         </NavLink>
 
         <NavLink
           to="/dashboard/user/setting"
           className={({ isActive }) =>
             `flex items-center p-3 rounded-lg text-sm font-medium ${
-              isActive ? "bg-indigo-200" : "hover:bg-gray-100"
-            } transition-all duration-200 ease-in-out shadow-sm hover:shadow-md border border-gray-200`
+              isActive ? "bg-indigo-100" : "hover:bg-indigo-200"
+            } transition-all duration-200 ease-in-out`
           }
         >
           <FaCogs className="text-2xl mr-4" />
-          <span>Settings</span>
+          <span>Tweaks</span>
         </NavLink>
       </div>
 
@@ -137,7 +137,7 @@ const UserMenu: React.FC = () => {
             localStorage.removeItem("auth");
             window.location.reload();
           }}
-          className="flex items-center p-3 w-full rounded-lg bg-red-500 hover:bg-red-600 mt-6 transition-all duration-200 ease-in-out shadow-lg hover:shadow-xl border border-red-200"
+          className="flex items-center p-3 w-full rounded-lg bg-gray-300 hover:bg-gray-400 mt-6 transition-all duration-200 ease-in-out"
         >
           <AiOutlineLogout className="text-2xl mr-4" />
           <span>Logout</span>

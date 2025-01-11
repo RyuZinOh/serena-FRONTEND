@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../../components/Layout/Layout";
 import UserMenu from "../../components/Layout/UserMenu";
-import InfoMenu from "../../components/Layout/InfoMenu";
 import { toast } from "react-toastify";
 import useAuth from "../../context/useAuth";
-import { FaSearch, FaBars, FaTimes } from "react-icons/fa";
+import { FaBars, FaTimes } from "react-icons/fa";
 
 interface Stats {
   attack: number;
@@ -30,10 +29,8 @@ interface Pokemon {
 const YourCustomPoke: React.FC = () => {
   const [ownedPokemons, setOwnedPokemons] = useState<Pokemon[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const [filteredPokemons, setFilteredPokemons] = useState<Pokemon[]>([]);
-  const [selectedPokemon, setSelectedPokemon] = useState<Pokemon | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const [hoveredPokemonId, setHoveredPokemonId] = useState<string | null>(null);
 
   const [auth] = useAuth();
   const token = auth?.token;
@@ -62,7 +59,6 @@ const YourCustomPoke: React.FC = () => {
             }
           });
           setOwnedPokemons(data.pokemons || []);
-          setFilteredPokemons(data.pokemons || []);
         } else {
           const errorData = await response.json();
           setError(errorData.message || "Failed to fetch owned Pokémon.");
@@ -74,22 +70,6 @@ const YourCustomPoke: React.FC = () => {
 
     fetchOwnedPokemons();
   }, [token]);
-
-  useEffect(() => {
-    if (searchQuery.trim() === "") {
-      setFilteredPokemons(ownedPokemons);
-    } else {
-      setFilteredPokemons(
-        ownedPokemons.filter((pokemon) =>
-          pokemon.name.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-      );
-    }
-  }, [searchQuery, ownedPokemons]);
-
-  const handleViewMore = (pokemon: Pokemon) => {
-    setSelectedPokemon(pokemon);
-  };
 
   return (
     <Layout title="Owned Pokemons - Serena" description="Your owned pokemons">
@@ -109,9 +89,9 @@ const YourCustomPoke: React.FC = () => {
         </div>
 
         <div
-          className={`flex-0 p-1 overflow-hidden ${
+          className={`flex-1 p-4 ${
             isMenuOpen ? "overflow-hidden" : "overflow-auto"
-          }`}
+          } h-full`}
         >
           <div className="block md:hidden mb-4">
             <button
@@ -125,55 +105,88 @@ const YourCustomPoke: React.FC = () => {
           <h1 className="text-2xl font-semibold mb-4">
             View Your Owned Pokemons
           </h1>
-          <div className="mb-8 w-60 h-12 relative flex rounded-xl mx-auto">
-            <input
-              required
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="peer w-full bg-transparent outline-none px-4 text-base rounded-xl bg-white border border-black focus:shadow-md"
-            />
-            <label
-              htmlFor="search"
-              className="absolute top-1/2 left-4 px-2 transform -translate-y-1/2 font-light text-base bg-white text-black peer-focus:text-sm peer-focus:text-black peer-focus:left-3 peer-focus:-top-2 peer-valid:text-sm peer-valid:text-black peer-valid:left-3 peer-valid:-top-2 duration-150"
-            >
-              Search Pokémon
-            </label>
-            <FaSearch className="absolute top-1/2 right-4 transform -translate-y-1/2 text-black" />
-          </div>
 
           {error ? (
             <div className="text-center text-red-500 mt-8">{error}</div>
           ) : (
-            <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-              {filteredPokemons.length === 0 ? (
-                <div className="text-center">No Pokémon owned.</div>
-              ) : (
-                filteredPokemons.map((pokemon) => (
-                  <div
-                    key={pokemon._id}
-                    className="card flex flex-col items-center cursor-pointer"
-                    onClick={() => handleViewMore(pokemon)}
-                  >
-                    <div className="card-img-wrapper w-full h-56 mb-4 overflow-hidden">
-                      <img
-                        src={`data:${pokemon.image.contentType};base64,${pokemon.image.data}`}
-                        alt={pokemon.name}
-                        className="card-img w-full h-full object-cover object-top"
-                      />
-                    </div>
-                    <h2 className="text-lg font-semibold text-gray-800 mb-2">
-                      {pokemon.name}
-                    </h2>
-                  </div>
-                ))
-              )}
+            <div className="overflow-x-auto">
+              <table className="table-auto w-full text-left border-collapse border border-gray-400">
+                <thead>
+                  <tr>
+                    <th className="border border-gray-400 px-4 py-2">Image</th>
+                    <th className="border border-gray-400 px-4 py-2">Name</th>
+                    <th className="border border-gray-400 px-4 py-2">
+                      boughtAt
+                    </th>
+                    <th className="border border-gray-400 px-4 py-2">Attack</th>
+                    <th className="border border-gray-400 px-4 py-2">
+                      Defense
+                    </th>
+                    <th className="border border-gray-400 px-4 py-2">HP</th>
+                    <th className="border border-gray-400 px-4 py-2">
+                      Special Attack
+                    </th>
+                    <th className="border border-gray-400 px-4 py-2">
+                      Special Defense
+                    </th>
+                    <th className="border border-gray-400 px-4 py-2">Speed</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ownedPokemons.map((pokemon) => (
+                    <React.Fragment key={pokemon._id}>
+                      <tr
+                        onMouseEnter={() => setHoveredPokemonId(pokemon._id)}
+                        onMouseLeave={() => setHoveredPokemonId(null)}
+                        className="cursor-pointer"
+                      >
+                        <td className="border border-gray-400 px-4 py-2">
+                          <img
+                            src={`data:${pokemon.image.contentType};base64,${pokemon.image.data}`}
+                            alt={pokemon.name}
+                            className="w-12 h-12 rounded-full object-cover"
+                          />
+                        </td>
+                        <td className="border border-gray-400 px-4 py-2">
+                          {pokemon.name}
+                        </td>
+                        <td className="border border-gray-400 px-4 py-2">
+                          रु. {pokemon.price} /-                        </td>
+                        <td className="border border-gray-400 px-4 py-2">
+                          {pokemon.stats.attack}
+                        </td>
+                        <td className="border border-gray-400 px-4 py-2">
+                          {pokemon.stats.defense}
+                        </td>
+                        <td className="border border-gray-400 px-4 py-2">
+                          {pokemon.stats.hp}
+                        </td>
+                        <td className="border border-gray-400 px-4 py-2">
+                          {pokemon.stats.special_attack}
+                        </td>
+                        <td className="border border-gray-400 px-4 py-2">
+                          {pokemon.stats.special_defense}
+                        </td>
+                        <td className="border border-gray-400 px-4 py-2">
+                          {pokemon.stats.speed}
+                        </td>
+                      </tr>
+                      {hoveredPokemonId === pokemon._id && (
+                        <tr>
+                          <td
+                            colSpan={9}
+                            className="border border-gray-400 px-4 py-2 bg-white text-center"
+                          >
+                            {"Description: " + pokemon.description}
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
-        </div>
-
-        <div className="w-96 p-6 border-l border-gray-300 h-full">
-          <InfoMenu pokemon={selectedPokemon} />
         </div>
       </div>
     </Layout>

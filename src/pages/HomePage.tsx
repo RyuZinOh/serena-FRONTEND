@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { Parallax } from "react-parallax";
 import HomeBg from "./HomeExplicit/HomeBg";
 import HomeCard from "./HomeExplicit/HomeCard";
+
 const HomePage: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isMobile, setIsMobile] = useState<boolean>(false);
@@ -59,12 +60,6 @@ const HomePage: React.FC = () => {
           className="w-full h-[500px] sm:h-[750px] flex items-center justify-center"
         >
           <div className="absolute inset-0 bg-black bg-opacity-70"></div>
-          <div className="relative z-10 text-center text-white font-bold p-4">
-            <h2 className="text-2xl sm:text-4xl">Catch 'Em All with Serena</h2>
-            <p className="mt-2 text-lg">
-              Your ultimate platform to train and battle Pokémon!
-            </p>
-          </div>
         </Parallax>
       </div>
       <div className="mt-8 text-left">
