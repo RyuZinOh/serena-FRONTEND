@@ -42,7 +42,7 @@ const Header: React.FC = () => {
   const navLinks = [
     { to: "/", label: "Home" },
     { to: "/battlezone", label: "Battlezone" },
-    { to: "/commandsector", label: "Commandsector" },
+    { to: "/botcmds", label: "Cmds" },
     { to: "/incensewar", label: "Incensewar" },
     { to: "/market", label: "Market" },
     { to: "/appearance", label: "Appearance" },
