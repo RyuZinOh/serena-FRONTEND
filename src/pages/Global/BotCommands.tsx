@@ -1,93 +1,125 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import axios from "axios";
 import { io } from "socket.io-client";
-import { FaCommentDots, FaArrowRight, FaUser, FaCircle } from "react-icons/fa";
 import Layout from "../../components/Layout/Layout";
 import ChannelMenu from "../../components/Layout/ChannelMenu";
+import useAuth from "../../context/useAuth";
+import LoginRequired from "../LoginRequired";
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
-const socket = io(baseUrl);
 
-const Botcommands: React.FC = () => {
-  const [username, setUsername] = useState<string | null>(null);
+const Botcommands = () => {
+  const [auth] = useAuth();
+  const [socket, setSocket] = useState<ReturnType<typeof io> | null>(null);
   const [message, setMessage] = useState<string>("");
   const [messages, setMessages] = useState<
     { text: string; timestamp: string; sender: string; channel: string }[]
   >([]);
-  const [typing, setTyping] = useState<boolean>(false);
   const [selectedChannel, setSelectedChannel] = useState<string>("General");
+  const [profilePic, setProfilePic] = useState<string | null>(null);
+  const [isTyping, setIsTyping] = useState<boolean>(false);
+  const [isAtBottom, setIsAtBottom] = useState(true);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const storedUsername = sessionStorage.getItem("username");
-    if (storedUsername) {
-      setUsername(storedUsername);
-    } else {
-      const promptUsername = prompt("Enter your username:");
-      if (promptUsername) {
-        sessionStorage.setItem("username", promptUsername);
-        setUsername(promptUsername);
+  const fetchProfilePic = useCallback(async () => {
+    if (auth.token) {
+      try {
+        const response = await axios.get(`${baseUrl}/user/mypfp`, {
+          headers: { Authorization: `${auth.token}` },
+          responseType: "blob",
+        });
+        setProfilePic(URL.createObjectURL(response.data));
+      } catch {
+        setProfilePic(null);
       }
     }
+  }, [auth.token]);
 
-    if (username) {
-      socket.on(
-        "message",
-        (data: {
-          text: string;
-          timestamp: string;
-          sender: string;
-          channel: string;
-        }) => {
-          if (data.channel === selectedChannel) {
-            setMessages((prevMessages) => [...prevMessages, data]);
-          }
-        }
-      );
+  useEffect(() => {
+    fetchProfilePic();
+  }, [fetchProfilePic]);
 
-      socket.on("typing", () => setTyping(true));
-      socket.on("stop_typing", () => setTyping(false));
+  useEffect(() => {
+    const socketConnection = io(baseUrl, {
+      extraHeaders: { Authorization: `Bearer ${auth.token}` },
+    });
+    setSocket(socketConnection);
+
+    socketConnection.on("message", (data) => {
+      if (data.channel === selectedChannel) {
+        setMessages((prevMessages) => [...prevMessages, data]);
+        new Audio("/assets/pop.mp3").play();
+      }
+    });
+
+    socketConnection.on("typing", () => setIsTyping(true));
+    socketConnection.on("stop_typing", () => setIsTyping(false));
+
+    return () => {
+      socketConnection.disconnect();
+      setSocket(null);
+    };
+  }, [auth?.token, selectedChannel]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (messagesEndRef.current) {
+        setIsAtBottom(
+          messagesEndRef.current.scrollTop +
+            messagesEndRef.current.clientHeight ===
+            messagesEndRef.current.scrollHeight
+        );
+      }
+    };
+
+    if (isAtBottom) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+
+    const element = messagesEndRef.current;
+    if (element) {
+      element.addEventListener("scroll", handleScroll);
     }
 
     return () => {
-      socket.off("message");
-      socket.off("typing");
-      socket.off("stop_typing");
+      element?.removeEventListener("scroll", handleScroll);
     };
-  }, [username, selectedChannel]);
-
-  const sendMessage = () => {
-    if (username) {
-      const timestamp = new Date().toLocaleTimeString();
-      socket.emit("message", {
-        text: message,
-        timestamp,
-        sender: username,
-        channel: selectedChannel,
-      });
-      setMessage("");
-    }
-  };
+  }, [isAtBottom, messages]);
 
   const handleTyping = (event: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(event.target.value);
-    if (event.target.value) {
-      socket.emit("typing");
-    } else {
-      socket.emit("stop_typing");
+    if (socket) {
+      socket.emit(event.target.value ? "typing" : "stop_typing");
     }
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter" && message.trim()) {
-      sendMessage();
+      handleSendMessage();
     }
   };
 
   const handleChannelSelect = (channel: string) => {
     setSelectedChannel(channel);
+    setMessages([]);
   };
 
-  if (!username) {
-    return null;
+  const handleSendMessage = () => {
+    if (socket && message.trim()) {
+      const timestamp = new Date().toLocaleTimeString();
+      socket.emit("message", {
+        text: message.trim(),
+        timestamp,
+        sender: auth?.user?.name,
+        channel: selectedChannel,
+      });
+      setMessage("");
+    }
+    setIsAtBottom(false);
+  };
+
+  if (!auth?.token) {
+    return <LoginRequired />;
   }
 
   return (
@@ -101,35 +133,55 @@ const Botcommands: React.FC = () => {
       <div className="min-h-screen bg-gray-50 flex">
         <ChannelMenu onChannelSelect={handleChannelSelect} />
         <div className="w-3/4 bg-white flex flex-col shadow-lg">
-          <div className="flex items-center px-4 py-2 border-b border-gray-200">
-            <FaCommentDots size={24} className="text-gray-600" />
+          <div className="flex items-center px-4 py-2 border-b border-gray-200 sticky top-0 bg-white z-10">
             <span className="ml-2 text-lg font-semibold text-gray-800">
               Chat - {selectedChannel}
             </span>
           </div>
-          <div className="flex-1 p-4 space-y-4 overflow-y-auto">
+          <div
+            className="flex-1 p-4 space-y-4 overflow-y-auto"
+            ref={messagesEndRef}
+          >
             {messages.map((msg, index) => (
-              <div key={index} className="flex items-start space-x-2">
-                <FaUser size={20} className="text-gray-500" />
-                <div>
+              <div
+                key={index}
+                className={`flex items-start space-x-2 ${
+                  msg.sender === auth?.user?.name ? "" : "justify-end"
+                }`}
+              >
+                {msg.sender === auth?.user?.name && (
+                  <img
+                    src={profilePic || "/default-avatar.png"}
+                    alt="User Profile"
+                    className="w-8 h-8 rounded-full"
+                  />
+                )}
+                <div
+                  className={`${
+                    msg.sender === auth?.user?.name
+                      ? "bg-blue-100"
+                      : "bg-gray-100 text-right"
+                  } p-2 rounded-lg`}
+                >
                   <span className="text-xs text-gray-400">{msg.timestamp}</span>
                   <p className="text-sm text-gray-800">
                     <strong>{msg.sender}:</strong> {msg.text}
                   </p>
                 </div>
+                {msg.sender !== auth?.user?.name && (
+                  <img
+                    src={profilePic || "/default-avatar.png"}
+                    alt="User Profile"
+                    className="w-8 h-8 rounded-full"
+                  />
+                )}
               </div>
             ))}
-            {typing && (
-              <p className="text-gray-400 text-sm">
-                <FaCircle
-                  className="inline-block text-blue-400 mr-1"
-                  size={8}
-                />
-                Someone is typing...
-              </p>
+            {isTyping && (
+              <div className="text-sm text-gray-500">Someone is typing...</div>
             )}
           </div>
-          <div className="px-4 py-2 bg-gray-100 shadow-md">
+          <div className="px-4 py-2 bg-gray-100 shadow-md sticky bottom-0">
             <div className="flex items-center">
               <input
                 type="text"
@@ -138,14 +190,16 @@ const Botcommands: React.FC = () => {
                 onKeyDown={handleKeyDown}
                 placeholder="Type a message..."
                 className="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                disabled={!auth?.token}
               />
-              <button
-                onClick={sendMessage}
-                className="ml-2 p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 flex items-center space-x-1"
-              >
-                <FaArrowRight size={16} />
-                <span>Send</span>
-              </button>
+              {auth?.token && (
+                <button
+                  onClick={handleSendMessage}
+                  className="ml-2 p-2 bg-black text-white rounded-md hover:bg-blue-600 flex items-center space-x-1"
+                >
+                  <span>Send</span>
+                </button>
+              )}
             </div>
           </div>
         </div>
