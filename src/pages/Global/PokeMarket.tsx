@@ -157,13 +157,14 @@ const MarketSection: React.FC = () => {
                     key={pokemon._id}
                     className="group relative bg-slate-50 flex flex-col items-center justify-center gap-2 text-center rounded-2xl overflow-hidden border-2 border-gray-900 shadow-2xl"
                   >
-                    <div className="w-28 h-28 bg-blue-700 mt-8 rounded-full border-4 border-slate-50 relative z-10 group-hover:scale-150 group-hover:-translate-x-24 group-hover:-translate-y-20 transition-all duration-500">
+                    <div className="w-32 h-32 bg-blue-700 mt-8 rounded-full border-4 border-slate-50 relative z-10 group-hover:scale-150 group-hover:-translate-x-24 group-hover:-translate-y-20 transition-all duration-500">
                       <img
                         src={`data:${pokemon.image.contentType};base64,${pokemon.image.data}`}
                         alt={pokemon.name}
                         className="w-full h-full object-cover object-center rounded-full"
                       />
                     </div>
+
                     <div className="z-10 group-hover:-translate-y-10 transition-all duration-500">
                       <span className="text-2xl font-semibold">
                         {pokemon.name}
