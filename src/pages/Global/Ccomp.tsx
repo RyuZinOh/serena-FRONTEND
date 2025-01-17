@@ -87,19 +87,14 @@ const Ccomp: React.FC = () => {
         </div>
       ) : loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {Array.from({ length: 8 }).map(
-            (
-              _,
-              index // Change skeleton items to 8
-            ) => (
-              <div
-                key={index}
-                className="card flex flex-col items-center bg-gray-100 p-4 rounded-xl shadow-md"
-              >
-                <Skeleton height={200} width="100%" />
-              </div>
-            )
-          )}
+          {Array.from({ length: 8 }).map((_, index) => (
+            <div
+              key={index}
+              className="card flex flex-col items-center bg-gray-100 p-4 rounded-xl shadow-md"
+            >
+              <Skeleton height={200} width="100%" />
+            </div>
+          ))}
         </div>
       ) : (
         <section>
@@ -121,7 +116,7 @@ const Ccomp: React.FC = () => {
                   </p>
                   <p className="text-xl font-bold mt-2">{image.price} SRX</p>
                   <button
-                    className="mt-4 px-6 py-2 bg-black text-white font-semibold rounded-md"
+                    className="mt-4 px-6 py-2 bg-yellow-400 text-black font-semibold rounded-md hover:bg-yellow-500 transition duration-300"
                     onClick={() => handleBuyCard(image.name)}
                   >
                     Buy
@@ -135,9 +130,9 @@ const Ccomp: React.FC = () => {
             <button
               onClick={handlePrevPage}
               disabled={currentPage === 1}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md disabled:opacity-50"
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md disabled:opacity-50 flex items-center"
             >
-              <FaArrowLeft /> Previous
+              <FaArrowLeft className="mr-2" /> Previous
             </button>
             <span className="text-gray-600">
               Page {currentPage} of {totalPages}
@@ -145,9 +140,9 @@ const Ccomp: React.FC = () => {
             <button
               onClick={handleNextPage}
               disabled={currentPage === totalPages}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md disabled:opacity-50"
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md disabled:opacity-50 flex items-center"
             >
-              Next <FaArrowRight />
+              Next <FaArrowRight className="ml-2" />
             </button>
           </div>
         </section>

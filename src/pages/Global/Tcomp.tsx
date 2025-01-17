@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaArrowLeft, FaArrowRight, FaShoppingCart } from "react-icons/fa";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import useAuth from "../../context/useAuth";
@@ -50,7 +50,9 @@ const Tcomp: React.FC = () => {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/kamehameha/buy_title/${index + 1}`,
+        `${import.meta.env.VITE_API_BASE_URL}/kamehameha/buy_title/${
+          index + 1
+        }`,
         {
           method: "POST",
           headers: {
@@ -84,12 +86,12 @@ const Tcomp: React.FC = () => {
         <p className="text-center">Loading...</p>
       ) : (
         <section>
-          <div className="hidden md:block">
-            <table className="min-w-full border-spacing-0">
+          <div className="block">
+            <table className="min-w-full table-auto text-center">
               <thead className="bg-black text-white">
                 <tr>
-                  {["No.", "Title", "Price", "Actions"].map((header) => (
-                    <th key={header} className="border px-4 py-3 text-xl">
+                  {["Title", "Price", "Actions"].map((header) => (
+                    <th key={header} className="border px-4 py-2 text-xl">
                       {header}
                     </th>
                   ))}
@@ -104,46 +106,31 @@ const Tcomp: React.FC = () => {
                         idx % 2 === 0 ? "bg-white" : "bg-gray-50"
                       } hover:bg-gray-100`}
                     >
-                      <td className="border px-4 py-4">{(currentPage - 1) * TITLES_PER_PAGE + idx + 1}</td>
-                      <td className="border px-4 py-4">{title.name}</td>
-                      <td className="border px-4 py-4">{title.price} SRX</td>
-                      <td className="border px-4 py-4">
+                      <td className="border px-4 py-2">{title.name}</td>
+                      <td className="border px-4 py-2">{title.price} SRX</td>
+                      <td className="border px-4 py-2">
                         <button
-                          onClick={() => handleBuyTitle((currentPage - 1) * TITLES_PER_PAGE + idx)}
-                          className="px-4 py-2 bg-black text-white rounded-full hover:bg-gray-700"
+                          onClick={() =>
+                            handleBuyTitle(
+                              (currentPage - 1) * TITLES_PER_PAGE + idx
+                            )
+                          }
+                          className="px-4 py-2 bg-yellow-500 text-black rounded-full hover:bg-yellow-600"
                         >
-                          <FaShoppingCart />
+                          Buy
                         </button>
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={4} className="text-center px-4 py-4">
+                    <td colSpan={3} className="text-center px-4 py-4">
                       No titles available.
                     </td>
                   </tr>
                 )}
               </tbody>
             </table>
-          </div>
-
-          <div className="md:hidden grid gap-4">
-            {currentTitles.map((title, idx) => (
-              <div
-                key={idx}
-                className="bg-white p-4 rounded-lg shadow-lg flex flex-col items-center"
-              >
-                <h3 className="text-xl font-semibold">{title.name}</h3>
-                <p>{title.price} SRX</p>
-                <button
-                  onClick={() => handleBuyTitle((currentPage - 1) * TITLES_PER_PAGE + idx)}
-                  className="mt-2 px-4 py-2 bg-black text-white rounded-full hover:bg-gray-700"
-                >
-                  <FaShoppingCart />
-                </button>
-              </div>
-            ))}
           </div>
 
           <div className="flex justify-center mt-4">

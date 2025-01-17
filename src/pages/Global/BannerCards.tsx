@@ -6,9 +6,7 @@ import Tcomp from "./Tcomp";
 import { Menu } from "lucide-react";
 
 const BannerCards: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<
-    "cards" | "backgrounds" | "titles"
-  >("cards");
+  const [activeTab, setActiveTab] = useState<"cards" | "backgrounds" | "titles">("cards");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   return (
@@ -29,14 +27,10 @@ const BannerCards: React.FC = () => {
             isSidebarOpen ? "block" : "hidden"
           } md:block w-48 h-full bg-white shadow-md p-4 transition-transform duration-300`}
         >
-          <ul className="flex flex-col gap-10 mt-12">
+          <ul className="flex flex-col gap-6 mt-12">
             <li>
               <button
-                className={`w-full px-6 py-2 text-left rounded-lg transition-colors duration-300 ease-in-out ${
-                  activeTab === "cards"
-                    ? "font-semibold text-golden-500 bg-gray-100 shadow-lg"
-                    : "text-gray-600 hover:text-golden-500 hover:bg-gray-50"
-                }`}
+                className={`w-full px-6 py-3 text-black rounded-lg transition-colors duration-300 ease-in-out bg-yellow-400 shadow-lg`}
                 onClick={() => setActiveTab("cards")}
               >
                 Cards
@@ -45,11 +39,7 @@ const BannerCards: React.FC = () => {
 
             <li>
               <button
-                className={`w-full px-6 py-2 text-left rounded-lg transition-colors duration-300 ease-in-out ${
-                  activeTab === "backgrounds"
-                    ? "font-semibold text-golden-500 bg-gray-100 shadow-lg"
-                    : "text-gray-600 hover:text-golden-500 hover:bg-gray-50"
-                }`}
+                className={`w-full px-6 py-3 text-black rounded-lg transition-colors duration-300 ease-in-out bg-yellow-400 shadow-lg`}
                 onClick={() => setActiveTab("backgrounds")}
               >
                 Backgrounds
@@ -58,11 +48,7 @@ const BannerCards: React.FC = () => {
 
             <li>
               <button
-                className={`w-full px-6 py-2 text-left rounded-lg transition-colors duration-300 ease-in-out ${
-                  activeTab === "titles"
-                    ? "font-semibold text-golden-500 bg-gray-100 shadow-lg"
-                    : "text-gray-600 hover:text-golden-500 hover:bg-gray-50"
-                }`}
+                className={`w-full px-6 py-3 text-black rounded-lg transition-colors duration-300 ease-in-out bg-yellow-400 shadow-lg`}
                 onClick={() => setActiveTab("titles")}
               >
                 Titles

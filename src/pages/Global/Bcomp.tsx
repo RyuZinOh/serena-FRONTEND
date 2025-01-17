@@ -52,7 +52,7 @@ const Bcomp: React.FC = () => {
     try {
       const token = authState.token;
       if (!token) {
-        toast.error("Authentication token is missing!");
+        toast.error("u need to login to buy any banners from here!");
         return;
       }
 
@@ -140,7 +140,7 @@ const Bcomp: React.FC = () => {
                     </p>
                     <p className="text-xl font-bold mt-2">{image.price} SRX</p>
                     <button
-                      className="mt-4 py-2 px-6 bg-black bg-opacity-70 text-white font-semibold text-lg rounded-full shadow-md hover:bg-opacity-90 hover:scale-105 transition-transform duration-300"
+                      className="mt-4 py-2 px-6 bg-yellow-400 text-black font-semibold text-lg rounded-full shadow-md hover:bg-yellow-500 hover:scale-105 transition-transform duration-300"
                       onClick={() => handleBuyBackground(image.name)}
                     >
                       Buy Now

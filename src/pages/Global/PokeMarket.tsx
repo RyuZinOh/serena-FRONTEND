@@ -34,7 +34,7 @@ const MarketSection: React.FC = () => {
   const [auth] = useAuth();
   const token = auth?.token;
 
-  const itemsPerPage = 4;
+  const itemsPerPage = 4; // Optimized for 4 cards per row
 
   useEffect(() => {
     const fetchPokemons = async () => {
@@ -69,7 +69,7 @@ const MarketSection: React.FC = () => {
         )
       : pokemons;
     setFilteredPokemons(filtered);
-    setCurrentPage(1); 
+    setCurrentPage(1);
   }, [searchQuery, pokemons]);
 
   const handleBuyClick = async (pokemonId: string) => {
@@ -110,16 +110,15 @@ const MarketSection: React.FC = () => {
   );
 
   const renderSkeletons = (count: number) => (
-    <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+    <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
       {Array.from({ length: count }).map((_, index) => (
         <div
           key={index}
-          className="card flex flex-col items-center bg-gray-100 p-4 rounded-xl shadow-lg animate-pulse"
+          className="bg-gray-300 rounded-lg p-4 flex flex-col items-center animate-pulse"
         >
-          <div className="card-img-wrapper w-full h-72 bg-gray-300 rounded-md mb-4"></div>
-          <div className="h-4 bg-gray-300 w-3/4 rounded mb-2"></div>
-          <div className="h-4 bg-gray-300 w-1/2 rounded mb-4"></div>
-          <div className="h-4 bg-gray-300 w-full rounded"></div>
+          <div className="w-28 h-28 bg-gray-400 rounded-full mb-4"></div>
+          <div className="h-4 bg-gray-400 w-3/4 rounded mb-2"></div>
+          <div className="h-4 bg-gray-400 w-1/2 rounded"></div>
         </div>
       ))}
     </div>
@@ -131,46 +130,52 @@ const MarketSection: React.FC = () => {
         <div className="text-center text-red-500 mt-8">{error}</div>
       ) : (
         <div className="text-center p-8">
-          <div className="relative mb-8 w-[90%] sm:w-[60%] mx-auto">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full p-3 pl-12 border rounded-xl shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Search Pokémon"
-            />
-            <FaSearch className="absolute left-4 top-3 text-gray-500" />
-          </div>
+          <header className="sticky top-0 z-10">
+            <div className="flex items-center justify-between py-4 px-6 w-full">
+              <div className="relative w-full sm:w-1/2 md:w-1/3 max-w-sm">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full p-3 pl-10 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                  placeholder="Search Pokémon"
+                />
+                <FaSearch className="absolute left-3 top-3 text-gray-500" />
+              </div>
+            </div>
+          </header>
 
           {loading ? (
-            renderSkeletons(4)
+            renderSkeletons(4) // Optimized for 4 skeleton cards
           ) : (
-            <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {displayedPokemons.length === 0 ? (
                 <div className="text-center">No Pokémon found.</div>
               ) : (
                 displayedPokemons.map((pokemon) => (
                   <div
                     key={pokemon._id}
-                    className="card flex flex-col items-center bg-white p-4 rounded-xl shadow-lg"
+                    className="group relative bg-slate-50 flex flex-col items-center justify-center gap-2 text-center rounded-2xl overflow-hidden border-2 border-gray-900 shadow-2xl"
                   >
-                    <div className="card-img-wrapper w-full h-72 mb-4 overflow-hidden">
+                    <div className="w-28 h-28 bg-blue-700 mt-8 rounded-full border-4 border-slate-50 relative z-10 group-hover:scale-150 group-hover:-translate-x-24 group-hover:-translate-y-20 transition-all duration-500">
                       <img
                         src={`data:${pokemon.image.contentType};base64,${pokemon.image.data}`}
                         alt={pokemon.name}
-                        className="card-img w-full h-full object-cover object-top"
+                        className="w-full h-full object-cover object-center rounded-full"
                       />
                     </div>
-                    <h2 className="text-lg font-semibold text-gray-800 mb-2">
-                      {pokemon.name}
-                    </h2>
-                    <p className="text-sm text-gray-600 mb-4">
-                      {pokemon.description}
-                    </p>
+                    <div className="z-10 group-hover:-translate-y-10 transition-all duration-500">
+                      <span className="text-2xl font-semibold">
+                        {pokemon.name}
+                      </span>
+                      <p className="text-sm text-gray-600">
+                        {pokemon.description}
+                      </p>
+                    </div>
                     <p className="text-xl font-bold text-gray-800 mb-4">
                       SRX {pokemon.price}
                     </p>
-                    <div className="card-iv-info text-left mb-4 w-full">
+                    <div className="text-left mb-4 w-full px-2">
                       <p>
                         <strong>Attack:</strong> {pokemon.stats.attack}
                       </p>
@@ -194,7 +199,7 @@ const MarketSection: React.FC = () => {
                     </div>
                     <button
                       onClick={() => handleBuyClick(pokemon._id)}
-                      className="anime-btn w-full bg-gray-800 text-white py-2 rounded-lg"
+                      className="bg-yellow-500 px-6 py-2 text-black rounded-md z-10 transform translate-y-[-10px] transition-all duration-500 hover:bg-yellow-400"
                     >
                       Buy Now
                     </button>
@@ -208,7 +213,7 @@ const MarketSection: React.FC = () => {
             <button
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
-              className="px-4 py-2 bg-gray-300 text-gray-800 rounded-l-md disabled:opacity-50"
+              className="px-4 py-2 bg-gray-300 text-gray-800 rounded-l-lg disabled:opacity-50"
             >
               Previous
             </button>
@@ -220,7 +225,7 @@ const MarketSection: React.FC = () => {
             <button
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
-              className="px-4 py-2 bg-gray-300 text-gray-800 rounded-r-md disabled:opacity-50"
+              className="px-4 py-2 bg-gray-300 text-gray-800 rounded-r-lg disabled:opacity-50"
             >
               Next
             </button>
