@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import Layout from "../../components/Layout/Layout";
 import { toast } from "react-toastify";
 import useAuth from "../../context/useAuth";
-import { FaSearch } from "react-icons/fa";
+import { FaBookmark, FaSearch } from "react-icons/fa";
+import { FaSpinner } from "react-icons/fa";
 
 interface Pokemon {
   _id: string;
@@ -23,6 +24,13 @@ interface Pokemon {
   };
 }
 
+// Reusable Loader Component
+const Loader: React.FC = () => (
+  <div className="flex justify-center items-center h-64">
+    <FaSpinner className="animate-spin text-4xl text-yellow-500" />
+  </div>
+);
+
 const MarketSection: React.FC = () => {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
   const [filteredPokemons, setFilteredPokemons] = useState<Pokemon[]>([]);
@@ -34,7 +42,7 @@ const MarketSection: React.FC = () => {
   const [auth] = useAuth();
   const token = auth?.token;
 
-  const itemsPerPage = 4; // Optimized for 4 cards per row
+  const itemsPerPage = 4;
 
   useEffect(() => {
     const fetchPokemons = async () => {
@@ -109,21 +117,6 @@ const MarketSection: React.FC = () => {
     currentPage * itemsPerPage
   );
 
-  const renderSkeletons = (count: number) => (
-    <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-      {Array.from({ length: count }).map((_, index) => (
-        <div
-          key={index}
-          className="bg-gray-300 rounded-lg p-4 flex flex-col items-center animate-pulse"
-        >
-          <div className="w-28 h-28 bg-gray-400 rounded-full mb-4"></div>
-          <div className="h-4 bg-gray-400 w-3/4 rounded mb-2"></div>
-          <div className="h-4 bg-gray-400 w-1/2 rounded"></div>
-        </div>
-      ))}
-    </div>
-  );
-
   return (
     <Layout title="Market Section" description="Explore the market section.">
       {error ? (
@@ -146,7 +139,7 @@ const MarketSection: React.FC = () => {
           </header>
 
           {loading ? (
-            renderSkeletons(4) // Optimized for 4 skeleton cards
+            <Loader />
           ) : (
             <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {displayedPokemons.length === 0 ? (
@@ -157,6 +150,11 @@ const MarketSection: React.FC = () => {
                     key={pokemon._id}
                     className="group relative bg-slate-50 flex flex-col items-center justify-center gap-2 text-center rounded-2xl overflow-hidden border-2 border-gray-900 shadow-2xl"
                   >
+                    <FaBookmark
+                      className="absolute top-0 right-2 text-yellow-500 text-4xl cursor-pointer z-20 hover:scale-110 transition-transform"
+                      title="Bookmark this Pokémon"
+                    />
+
                     <div className="w-32 h-32 bg-blue-700 mt-8 rounded-full border-4 border-slate-50 relative z-10 group-hover:scale-150 group-hover:-translate-x-24 group-hover:-translate-y-20 transition-all duration-500">
                       <img
                         src={`data:${pokemon.image.contentType};base64,${pokemon.image.data}`}
