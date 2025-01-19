@@ -1,8 +1,6 @@
-import { useState, useEffect, useRef, useCallback } from "react";
-import axios from "axios";
+import { useState, useEffect, useRef, SetStateAction } from "react";
 import { io } from "socket.io-client";
 import Layout from "../../components/Layout/Layout";
-import ChannelMenu from "../../components/Layout/ChannelMenu";
 import useAuth from "../../context/useAuth";
 import LoginRequired from "../LoginRequired";
 
@@ -13,43 +11,24 @@ const Botcommands = () => {
   const [socket, setSocket] = useState<ReturnType<typeof io> | null>(null);
   const [message, setMessage] = useState<string>("");
   const [messages, setMessages] = useState<
-    { text: string; timestamp: string; sender: string; channel: string }[]
+    { text: string; timestamp: string; sender: string }[]
   >([]);
-  const [selectedChannel, setSelectedChannel] = useState<string>("General");
-  const [profilePic, setProfilePic] = useState<string | null>(null);
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [isAtBottom, setIsAtBottom] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const fetchProfilePic = useCallback(async () => {
-    if (auth.token) {
-      try {
-        const response = await axios.get(`${baseUrl}/user/mypfp`, {
-          headers: { Authorization: `${auth.token}` },
-          responseType: "blob",
-        });
-        setProfilePic(URL.createObjectURL(response.data));
-      } catch {
-        setProfilePic(null);
-      }
-    }
-  }, [auth.token]);
-
   useEffect(() => {
-    fetchProfilePic();
-  }, [fetchProfilePic]);
+    if (!auth?.token) return;
 
-  useEffect(() => {
     const socketConnection = io(baseUrl, {
       extraHeaders: { Authorization: `Bearer ${auth.token}` },
     });
+
     setSocket(socketConnection);
 
     socketConnection.on("message", (data) => {
-      if (data.channel === selectedChannel) {
-        setMessages((prevMessages) => [...prevMessages, data]);
-        new Audio("/assets/pop.mp3").play();
-      }
+      setMessages((prevMessages) => [...prevMessages, data]);
+      new Audio("/assets/pop.mp3").play();
     });
 
     socketConnection.on("typing", () => setIsTyping(true));
@@ -59,7 +38,7 @@ const Botcommands = () => {
       socketConnection.disconnect();
       setSocket(null);
     };
-  }, [auth?.token, selectedChannel]);
+  }, [auth?.token]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -86,32 +65,32 @@ const Botcommands = () => {
     };
   }, [isAtBottom, messages]);
 
-  const handleTyping = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTyping = (event: {
+    target: { value: SetStateAction<string> };
+  }) => {
     setMessage(event.target.value);
     if (socket) {
       socket.emit(event.target.value ? "typing" : "stop_typing");
     }
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (event: { key: string }) => {
     if (event.key === "Enter" && message.trim()) {
       handleSendMessage();
     }
   };
 
-  const handleChannelSelect = (channel: string) => {
-    setSelectedChannel(channel);
-    setMessages([]);
-  };
-
   const handleSendMessage = () => {
     if (socket && message.trim()) {
-      const timestamp = new Date().toLocaleTimeString();
+      const timestamp = new Date().toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true,
+      });
       socket.emit("message", {
         text: message.trim(),
         timestamp,
         sender: auth?.user?.name,
-        channel: selectedChannel,
       });
       setMessage("");
     }
@@ -131,11 +110,10 @@ const Botcommands = () => {
       viewport="width=device-width, initial-scale=1.0"
     >
       <div className="min-h-screen bg-gray-50 flex">
-        <ChannelMenu onChannelSelect={handleChannelSelect} />
-        <div className="w-3/4 bg-white flex flex-col shadow-lg">
+        <div className="w-full bg-white flex flex-col shadow-lg">
           <div className="flex items-center px-4 py-2 border-b border-gray-200 sticky top-0 bg-white z-10">
             <span className="ml-2 text-lg font-semibold text-gray-800">
-              Chat - {selectedChannel}
+              Chat
             </span>
           </div>
           <div
@@ -149,13 +127,6 @@ const Botcommands = () => {
                   msg.sender === auth?.user?.name ? "" : "justify-end"
                 }`}
               >
-                {msg.sender === auth?.user?.name && (
-                  <img
-                    src={profilePic || "/default-avatar.png"}
-                    alt="User Profile"
-                    className="w-8 h-8 rounded-full"
-                  />
-                )}
                 <div
                   className={`${
                     msg.sender === auth?.user?.name
@@ -168,13 +139,6 @@ const Botcommands = () => {
                     <strong>{msg.sender}:</strong> {msg.text}
                   </p>
                 </div>
-                {msg.sender !== auth?.user?.name && (
-                  <img
-                    src={profilePic || "/default-avatar.png"}
-                    alt="User Profile"
-                    className="w-8 h-8 rounded-full"
-                  />
-                )}
               </div>
             ))}
             {isTyping && (
