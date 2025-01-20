@@ -3,6 +3,7 @@ import { io } from "socket.io-client";
 import Layout from "../../components/Layout/Layout";
 import useAuth from "../../context/useAuth";
 import LoginRequired from "../LoginRequired";
+import { FaPaperPlane } from "react-icons/fa";
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
@@ -13,7 +14,6 @@ const Botcommands = () => {
   const [messages, setMessages] = useState<
     { text: string; timestamp: string; sender: string }[]
   >([]);
-  const [isTyping, setIsTyping] = useState<boolean>(false);
   const [isAtBottom, setIsAtBottom] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -30,9 +30,6 @@ const Botcommands = () => {
       setMessages((prevMessages) => [...prevMessages, data]);
       new Audio("/assets/pop.mp3").play();
     });
-
-    socketConnection.on("typing", () => setIsTyping(true));
-    socketConnection.on("stop_typing", () => setIsTyping(false));
 
     return () => {
       socketConnection.disconnect();
@@ -69,9 +66,6 @@ const Botcommands = () => {
     target: { value: SetStateAction<string> };
   }) => {
     setMessage(event.target.value);
-    if (socket) {
-      socket.emit(event.target.value ? "typing" : "stop_typing");
-    }
   };
 
   const handleKeyDown = (event: { key: string }) => {
@@ -109,43 +103,39 @@ const Botcommands = () => {
       keywords="pokemon, botcommands, chat"
       viewport="width=device-width, initial-scale=1.0"
     >
-      <div className="min-h-screen bg-gray-50 flex">
-        <div className="w-full bg-white flex flex-col shadow-lg">
-          <div className="flex items-center px-4 py-2 border-b border-gray-200 sticky top-0 bg-white z-10">
-            <span className="ml-2 text-lg font-semibold text-gray-800">
-              Chat
-            </span>
-          </div>
+      <div className="min-h-screen bg-white flex">
+        <div className="w-full flex flex-col shadow-lg">
           <div
-            className="flex-1 p-4 space-y-4 overflow-y-auto"
+            className="flex-1 p-4 space-y-4 overflow-y-auto bg-white"
             ref={messagesEndRef}
           >
             {messages.map((msg, index) => (
               <div
                 key={index}
-                className={`flex items-start space-x-2 ${
-                  msg.sender === auth?.user?.name ? "" : "justify-end"
+                className={`flex items-start ${
+                  msg.sender === auth?.user?.name
+                    ? "justify-start"
+                    : "justify-end"
                 }`}
               >
                 <div
-                  className={`${
+                  className={`max-w-xs p-3 rounded-lg shadow-sm ${
                     msg.sender === auth?.user?.name
-                      ? "bg-blue-100"
-                      : "bg-gray-100 text-right"
-                  } p-2 rounded-lg`}
+                      ? "bg-blue-100 text-gray-800"
+                      : "bg-gray-200 text-gray-800 text-right"
+                  }`}
                 >
-                  <span className="text-xs text-gray-400">{msg.timestamp}</span>
-                  <p className="text-sm text-gray-800">
+                  <span className="block text-xs text-gray-500">
+                    {msg.timestamp}
+                  </span>
+                  <p className="mt-1 text-sm">
                     <strong>{msg.sender}:</strong> {msg.text}
                   </p>
                 </div>
               </div>
             ))}
-            {isTyping && (
-              <div className="text-sm text-gray-500">Someone is typing...</div>
-            )}
           </div>
-          <div className="px-4 py-2 bg-gray-100 shadow-md sticky bottom-0">
+          <div className="px-4 py-3 bg-white shadow-md sticky bottom-0 border-t border-gray-300">
             <div className="flex items-center">
               <input
                 type="text"
@@ -153,15 +143,24 @@ const Botcommands = () => {
                 onChange={handleTyping}
                 onKeyDown={handleKeyDown}
                 placeholder="Type a message..."
-                className="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex-1 p-3 rounded-md focus:outline-none"
+                style={{ border: "none" }}
                 disabled={!auth?.token}
               />
               {auth?.token && (
                 <button
                   onClick={handleSendMessage}
-                  className="ml-2 p-2 bg-black text-white rounded-md hover:bg-blue-600 flex items-center space-x-1"
+                  className="ml-3 p-3 bg-yellow-500 text-black font-medium rounded-md hover:bg-yellow-400 shadow-md transition-transform transform hover:scale-105 flex items-center justify-center"
                 >
-                  <span>Send</span>
+                  {message.trim() ? (
+                    <div className="flex space-x-1">
+                      <span className="dot"></span>
+                      <span className="dot"></span>
+                      <span className="dot"></span>
+                    </div>
+                  ) : (
+                    <FaPaperPlane />
+                  )}
                 </button>
               )}
             </div>
