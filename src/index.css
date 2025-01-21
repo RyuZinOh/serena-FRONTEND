@@ -29,25 +29,24 @@
 }
 
 /*animation*/
-
 .dot {
   width: 10px;
   height: 10px;
   background-color: black;
   border-radius: 50%;
-  animation: blink 1.5s infinite;
+  animation: blink 1.5s infinite, scale 1.5s infinite;
 }
 
 .dot:nth-child(1) {
-  animation-delay: 0s;
+  animation-delay: 0s, 0s;
 }
 
 .dot:nth-child(2) {
-  animation-delay: 0.2s;
+  animation-delay: 0.2s, 0.2s;
 }
 
 .dot:nth-child(3) {
-  animation-delay: 0.4s;
+  animation-delay: 0.4s, 0.4s;
 }
 
 @keyframes blink {
@@ -60,5 +59,18 @@
   }
   100% {
     opacity: 0.2;
+  }
+}
+
+@keyframes scale {
+  0%,
+  20% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.5);
+  }
+  100% {
+    transform: scale(1);
   }
 }
