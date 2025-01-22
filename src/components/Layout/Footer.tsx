@@ -24,6 +24,24 @@ const Footer: React.FC = () => {
       image:
         "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/54.png",
     },
+    {
+      text: "“Mew! The world is full of wonders and adventures here! I love the friendly trainers and amazing trades!”",
+      name: "Mew",
+      image:
+        "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/151.png",
+    },
+    {
+      text: "“Meowth! That’s right! I’ve found great battles, better trades, and the best community here!”",
+      name: "Meowth",
+      image:
+        "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/52.png",
+    },
+    {
+      text: "“Piplup! Splish splash, I’m having a blast! The trainers here are the coolest, and trading is so much fun!”",
+      name: "Piplup",
+      image:
+        "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/393.png",
+    },
   ];
 
   const nextTestimonial = () => {
