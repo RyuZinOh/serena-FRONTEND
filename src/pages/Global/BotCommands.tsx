@@ -4,8 +4,16 @@ import Layout from "../../components/Layout/Layout";
 import useAuth from "../../context/useAuth";
 import LoginRequired from "../LoginRequired";
 import { FaPaperPlane } from "react-icons/fa";
+import { marked } from "marked";
+
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
+const renderer = new marked.Renderer();
+renderer.link = ({ href, title, text }) => {
+  return `<a href="${href}" title="${title}" class="markdown-link">${text}</a>`;
+};
+
 
 const Botcommands = () => {
   const [auth] = useAuth();
@@ -35,7 +43,7 @@ const Botcommands = () => {
       socketConnection.disconnect();
       setSocket(null);
     };
-  }, [auth?.token]);
+  }, [auth.token]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -129,7 +137,12 @@ const Botcommands = () => {
                     {msg.timestamp}
                   </span>
                   <p className="mt-1 text-sm">
-                    <strong>{msg.sender}:</strong> {msg.text}
+                    <strong>{msg.sender}</strong>{" "}
+                    <span
+                      dangerouslySetInnerHTML={{
+                        __html: marked(msg.text, { renderer }),
+                      }}
+                    />
                   </p>
                 </div>
               </div>
