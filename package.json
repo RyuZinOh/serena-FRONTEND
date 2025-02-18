@@ -29,6 +29,7 @@
     "react-router-dom": "^6.28.0",
     "react-slick": "^0.30.3",
     "react-toastify": "^10.0.6",
+    "react-top-loading-bar": "^3.0.2",
     "react-transition-group": "^4.4.5",
     "recharts": "^2.14.1",
     "slick-carousel": "^1.8.1",

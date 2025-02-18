@@ -1,5 +1,5 @@
-import React from "react";
-import { Routes, Route } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import AboutPage from "./pages/AboutPage";
 import PolicyPage from "./pages/PolicyPage";
@@ -30,14 +30,28 @@ import YourCustumPoke from "./pages/user/YourCustumPoke";
 import Settings from "./pages/user/settings";
 import BannerCards from "./pages/Global/BannerCards";
 import Botcommands from "./pages/Global/BotCommands";
+import LoadingBar from "react-top-loading-bar";
 
 const NoMatch = () => {
   return <Pnf />;
 };
 
 const App: React.FC = () => {
+  const [progress, setProgress] = React.useState(0);
+  const location = useLocation();
+  useEffect(() => {
+    setProgress(50);
+    const timer = setTimeout(() => setProgress(100), 300);
+    return () => clearTimeout(timer);
+  }, [location]);
+
   return (
     <>
+      <LoadingBar
+        color="#FFD700"
+        progress={progress}
+        onLoaderFinished={() => setProgress(0)}
+      />
       <ToastContainer />
       <Routes>
         {/* Public Routes */}
@@ -58,8 +72,6 @@ const App: React.FC = () => {
           <Route path="user/profile" element={<Profile />} />
           <Route path="user/battles" element={<BattlingStatus />} />
           <Route path="user/owned" element={<YourCustumPoke />} />
-          
-          
 
           {/* Show Pnf for /dashboard */}
           <Route path="" element={<NoMatch />} />
@@ -84,7 +96,7 @@ const App: React.FC = () => {
         <Route path="/commandsector" element={<Construction />} />
         <Route path="/battlezone" element={<Construction />} />
         <Route path="/incensewar" element={<IncenseWar />} />
-       
+
         {/* Catch-All Route */}
         <Route path="*" element={<NoMatch />} />
       </Routes>
