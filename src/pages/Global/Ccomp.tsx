@@ -17,7 +17,7 @@ const Ccomp: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const itemsPerPage = 8; // Update to 8 per page
+  const itemsPerPage = 8;
 
   const [authState] = useAuth();
   const token = authState.token;
@@ -102,7 +102,7 @@ const Ccomp: React.FC = () => {
             {currentItems.map((image) => (
               <div
                 key={image.url}
-                className="bg-white rounded-xl shadow-lg overflow-hidden group relative"
+                className="bg-white rounded-xl shadow-lg overflow-hidden group relative transform transition-transform duration-300 hover:scale-105"
               >
                 <img
                   src={image.url}
@@ -130,7 +130,7 @@ const Ccomp: React.FC = () => {
             <button
               onClick={handlePrevPage}
               disabled={currentPage === 1}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md disabled:opacity-50 flex items-center"
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md disabled:opacity-50 flex items-center hover:bg-gray-300 transition duration-300"
             >
               <FaArrowLeft className="mr-2" /> Previous
             </button>
@@ -140,7 +140,7 @@ const Ccomp: React.FC = () => {
             <button
               onClick={handleNextPage}
               disabled={currentPage === totalPages}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md disabled:opacity-50 flex items-center"
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md disabled:opacity-50 flex items-center hover:bg-gray-300 transition duration-300"
             >
               Next <FaArrowRight className="ml-2" />
             </button>
