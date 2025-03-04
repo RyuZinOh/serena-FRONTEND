@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import useAuth from "../../context/useAuth";
+import useAuth from "../../../context/useAuth";
 
 const Tcomp: React.FC = () => {
   const [authState] = useAuth();
@@ -10,7 +10,7 @@ const Tcomp: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const TITLES_PER_PAGE = 12;
+  const TITLES_PER_PAGE = 15; // Updated number of items per page
 
   interface Title {
     name: string;
@@ -79,79 +79,86 @@ const Tcomp: React.FC = () => {
     currentPage * TITLES_PER_PAGE
   );
 
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
   return (
-    <div className="p-0 bg-white text-black">
+    <div className="p-5 max-w-7xl mx-auto">
+      <ToastContainer position="top-right" autoClose={3000} />
       {error && <p className="text-center text-red-500">{error}</p>}
       {loading ? (
         <p className="text-center">Loading...</p>
       ) : (
         <section>
-          <div className="block">
-            <table className="min-w-full table-auto text-center">
-              <thead className="bg-black text-white">
-                <tr>
-                  {["Title", "Price", "Actions"].map((header) => (
-                    <th key={header} className="border px-4 py-2 text-xl">
-                      {header}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {currentTitles.length ? (
-                  currentTitles.map((title, idx) => (
-                    <tr
-                      key={idx}
-                      className={`${
-                        idx % 2 === 0 ? "bg-white" : "bg-gray-50"
-                      } hover:bg-gray-100`}
+          {/* Titles displayed in card format */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {currentTitles.length ? (
+              currentTitles.map((title, idx) => (
+                <div
+                  key={idx}
+                  className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-all transform hover:scale-105"
+                >
+                  <h3 className="text-lg font-semibold mb-2">{title.name}</h3>
+                  <p className="text-base mb-4">{title.price} SRX</p>
+                  <div className="flex justify-end">
+                    <button
+                      onClick={() =>
+                        handleBuyTitle(
+                          (currentPage - 1) * TITLES_PER_PAGE + idx
+                        )
+                      }
+                      className="py-1.5 px-4 bg-gray-300 text-black rounded-md hover:bg-gray-400 transition-all text-sm"
                     >
-                      <td className="border px-4 py-2">{title.name}</td>
-                      <td className="border px-4 py-2">{title.price} SRX</td>
-                      <td className="border px-4 py-2">
-                        <button
-                          onClick={() =>
-                            handleBuyTitle(
-                              (currentPage - 1) * TITLES_PER_PAGE + idx
-                            )
-                          }
-                          className="px-4 py-2 bg-yellow-500 text-black rounded-full hover:bg-yellow-600"
-                        >
-                          Buy
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={3} className="text-center px-4 py-4">
-                      No titles available.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                      Buy
+                    </button>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="col-span-full text-center text-xl">
+                No titles available
+              </p>
+            )}
           </div>
 
-          <div className="flex justify-center mt-4">
+          {/* Pagination Controls */}
+          <div className="flex justify-center items-center gap-4 mt-8">
+            {/* Previous Button */}
             <button
-              onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+              onClick={handlePrevPage}
               disabled={currentPage === 1}
-              className="px-4 py-2 bg-gray-300 rounded-lg disabled:bg-gray-400"
+              className="flex items-center gap-2 px-5 py-2 bg-gray-300 text-gray-700 rounded-full shadow-md hover:bg-gray-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <FaArrowLeft />
+              Prev
             </button>
+
+            {/* Page Number */}
+            <span className="text-sm font-semibold bg-gray-100 px-4 py-2 rounded-full shadow-md">
+              Page {currentPage} of {totalPages}
+            </span>
+
+            {/* Next Button */}
             <button
-              onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+              onClick={handleNextPage}
               disabled={currentPage === totalPages}
-              className="px-4 mx-2 py-2 bg-gray-300 rounded-lg disabled:bg-gray-400"
+              className="flex items-center gap-2 px-5 py-2 bg-gray-300 text-gray-700 rounded-full shadow-md hover:bg-gray-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
+              Next
               <FaArrowRight />
             </button>
           </div>
         </section>
       )}
-      <ToastContainer />
     </div>
   );
 };

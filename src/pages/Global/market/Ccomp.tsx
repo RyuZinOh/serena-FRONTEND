@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import useAuth from "../../context/useAuth";
+import useAuth from "../../../context/useAuth";
 
 interface Image {
   url: string;
@@ -17,7 +17,7 @@ const Ccomp: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const itemsPerPage = 8;
+  const itemsPerPage = 18;
 
   const [authState] = useAuth();
   const token = authState.token;
@@ -80,69 +80,76 @@ const Ccomp: React.FC = () => {
   };
 
   return (
-    <div className="pt-0 px-4">
+    <div className="p-4 max-w-7xl mx-auto">
+      {/* Toast Notifications */}
+      <ToastContainer position="top-right" autoClose={3000} />
+
       {error ? (
-        <div className="text-center text-red-500">
+        <div className="text-center text-red-500 font-semibold">
           <p>{error}</p>
         </div>
       ) : loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {Array.from({ length: 8 }).map((_, index) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+          {Array.from({ length: itemsPerPage }).map((_, index) => (
             <div
               key={index}
-              className="card flex flex-col items-center bg-gray-100 p-4 rounded-xl shadow-md"
+              className="flex flex-col items-center bg-gray-100 p-4 rounded-lg shadow-md animate-pulse"
             >
-              <Skeleton height={200} width="100%" />
+              <Skeleton height={160} width="100%" />
             </div>
           ))}
         </div>
       ) : (
         <section>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+          {/* 6 Cards Per Row, 18 Cards Per Page */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
             {currentItems.map((image) => (
               <div
                 key={image.url}
-                className="bg-white rounded-xl shadow-lg overflow-hidden group relative transform transition-transform duration-300 hover:scale-105"
+                className="bg-white p-2 rounded-lg shadow-lg hover:shadow-xl transition-transform transform hover:scale-105 relative"
               >
-                <img
-                  src={image.url}
-                  alt={image.description}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 flex justify-center items-center flex-col text-white transition-opacity duration-500">
-                  <p className="text-lg text-center px-4">
-                    {image.description}
-                  </p>
-                  <p className="text-xl font-bold mt-2">{image.price} SRX</p>
-                  <button
-                    className="mt-4 px-6 py-2 bg-yellow-400 text-black font-semibold rounded-md hover:bg-yellow-500 transition duration-300"
-                    onClick={() => handleBuyCard(image.name)}
-                  >
-                    Buy
-                  </button>
+                <div className="relative group w-full h-80 overflow-hidden rounded-md">
+                  <img
+                    src={image.url}
+                    alt={image.name}
+                    className="w-full h-full object-cover rounded-md group-hover:scale-110 group-hover:opacity-90 transition-all duration-300"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 flex flex-col justify-center items-center text-white transition-opacity duration-300 rounded-md">
+                    <p className="text-sm text-center">{image.description}</p>
+                    <p className="text-lg font-bold mt-1">{image.price} SRX</p>
+                    <button
+                      className="mt-2 py-2 px-5 bg-yellow-400 text-black font-semibold text-sm rounded-full shadow-md hover:bg-yellow-500 transition-all duration-300"
+                      onClick={() => handleBuyCard(image.name)}
+                    >
+                      Buy Now
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="flex justify-between items-center mt-6">
+          {/* Pagination Controls */}
+          <div className="flex justify-center items-center gap-4 mt-6">
             <button
               onClick={handlePrevPage}
               disabled={currentPage === 1}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md disabled:opacity-50 flex items-center hover:bg-gray-300 transition duration-300"
+              className="flex items-center gap-2 px-5 py-2 bg-gray-300 text-gray-700 rounded-full shadow-md hover:bg-gray-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <FaArrowLeft className="mr-2" /> Previous
+              <FaArrowLeft />
+              Prev
             </button>
-            <span className="text-gray-600">
+            <span className="text-sm font-semibold bg-gray-100 px-6 py-3 rounded-full shadow-md">
               Page {currentPage} of {totalPages}
             </span>
             <button
               onClick={handleNextPage}
               disabled={currentPage === totalPages}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md disabled:opacity-50 flex items-center hover:bg-gray-300 transition duration-300"
+              className="flex items-center gap-2 px-5 py-2 bg-gray-300 text-gray-700 rounded-full shadow-md hover:bg-gray-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Next <FaArrowRight className="ml-2" />
+              Next
+              <FaArrowRight />
             </button>
           </div>
         </section>

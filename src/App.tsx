@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
-import HomePage from "./pages/HomePage";
+import HomePage from "./pages/HomeExplicit/HomePage";
 import AboutPage from "./pages/AboutPage";
 import PolicyPage from "./pages/PolicyPage";
 import ContactPage from "./pages/ContactPage";
@@ -24,11 +24,11 @@ import Currency from "./pages/user/Currency";
 import TradeStatus from "./pages/user/TradeStatus";
 import Profile from "./pages/user/Profile";
 import BattlingStatus from "./pages/user/battlingStatus";
-import MarketSection from "./pages/Global/PokeMarket";
+import MarketSection from "./pages/Global/market/PokeMarket";
 import CustomPoke from "./pages/Admin/CustomPoke";
 import YourCustumPoke from "./pages/user/YourCustumPoke";
 import Settings from "./pages/user/settings";
-import BannerCards from "./pages/Global/BannerCards";
+import BannerCards from "./pages/Global/market/BannerCards";
 import Botcommands from "./pages/Global/BotCommands";
 import LoadingBar from "react-top-loading-bar";
 

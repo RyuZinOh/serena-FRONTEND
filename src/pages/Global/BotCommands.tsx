@@ -1,19 +1,11 @@
-import { useState, useEffect, useRef, SetStateAction } from "react";
+import { useState, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 import Layout from "../../components/Layout/Layout";
 import useAuth from "../../context/useAuth";
 import LoginRequired from "../LoginRequired";
 import { FaPaperPlane } from "react-icons/fa";
-import { marked } from "marked";
-
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
-
-const renderer = new marked.Renderer();
-renderer.link = ({ href, title, text }) => {
-  return `<a href="${href}" title="${title}" class="markdown-link">${text}</a>`;
-};
-
 
 const Botcommands = () => {
   const [auth] = useAuth();
@@ -70,13 +62,11 @@ const Botcommands = () => {
     };
   }, [isAtBottom, messages]);
 
-  const handleTyping = (event: {
-    target: { value: SetStateAction<string> };
-  }) => {
+  const handleTyping = (event: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(event.target.value);
   };
 
-  const handleKeyDown = (event: { key: string }) => {
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter" && message.trim()) {
       handleSendMessage();
     }
@@ -111,10 +101,16 @@ const Botcommands = () => {
       keywords="pokemon, botcommands, chat"
       viewport="width=device-width, initial-scale=1.0"
     >
-      <div className="min-h-screen bg-white flex">
-        <div className="w-full flex flex-col shadow-lg">
+      <div className="min-h-screen bg-base-100 flex justify-center">
+        <div className="w-full max-w-7xl flex flex-col shadow-lg bg-base-200 rounded-lg">
+          {/* Header */}
+          <div className="p-4 bg-primary text-primary-content rounded-t-lg">
+            <h1 className="text-2xl font-bold text-center">Bot Commands</h1>
+          </div>
+
+          {/* Messages Container */}
           <div
-            className="flex-1 p-4 space-y-4 overflow-y-auto bg-white"
+            className="flex-1 p-4 space-y-4 overflow-y-auto bg-base-100"
             ref={messagesEndRef}
           >
             {messages.map((msg, index) => (
@@ -129,26 +125,23 @@ const Botcommands = () => {
                 <div
                   className={`max-w-xs p-3 rounded-lg shadow-sm ${
                     msg.sender === auth?.user?.name
-                      ? "bg-blue-100 text-gray-800"
-                      : "bg-gray-200 text-gray-800 text-right"
+                      ? "bg-primary text-primary-content"
+                      : "bg-secondary text-secondary-content"
                   }`}
                 >
-                  <span className="block text-xs text-gray-500">
+                  <span className="block text-xs text-opacity-50">
                     {msg.timestamp}
                   </span>
                   <p className="mt-1 text-sm">
-                    <strong>{msg.sender}</strong>{" "}
-                    <span
-                      dangerouslySetInnerHTML={{
-                        __html: marked(msg.text, { renderer }),
-                      }}
-                    />
+                    <strong>{msg.sender}</strong> {msg.text}
                   </p>
                 </div>
               </div>
             ))}
           </div>
-          <div className="px-4 py-3 bg-white shadow-md sticky bottom-0 border-t border-gray-300">
+
+          {/* Input Container */}
+          <div className="px-4 py-3 bg-base-100 shadow-md sticky bottom-0 border-t border-base-300 rounded-b-lg">
             <div className="flex items-center">
               <input
                 type="text"
@@ -156,14 +149,14 @@ const Botcommands = () => {
                 onChange={handleTyping}
                 onKeyDown={handleKeyDown}
                 placeholder="Type a message..."
-                className="flex-1 p-3 rounded-md focus:outline-none"
+                className="flex-1 p-3 rounded-md bg-base-200 focus:outline-none"
                 style={{ border: "none" }}
                 disabled={!auth?.token}
               />
               {auth?.token && (
                 <button
                   onClick={handleSendMessage}
-                  className="ml-3 p-3 bg-yellow-500 text-black font-medium rounded-md hover:bg-yellow-400 shadow-md transition-transform transform hover:scale-105 flex items-center justify-center"
+                  className="ml-3 p-3 bg-accent text-accent-content font-medium rounded-md hover:bg-accent-focus shadow-md transition-transform transform hover:scale-105 flex items-center justify-center"
                 >
                   {message.trim() ? (
                     <div className="flex space-x-1">
