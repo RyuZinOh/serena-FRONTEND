@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import Skeleton from "react-loading-skeleton";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
@@ -17,7 +17,7 @@ const Ccomp: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const itemsPerPage = 18;
+  const itemsPerPage = 9;
 
   const [authState] = useAuth();
   const token = authState.token;
@@ -32,7 +32,7 @@ const Ccomp: React.FC = () => {
         if (!response.ok) throw new Error("Failed to fetch cards");
         const data = await response.json();
         setCards(data.cards);
-      } catch (err: unknown) {
+      } catch (err) {
         setError(
           err instanceof Error ? err.message : "An unknown error occurred"
         );
@@ -44,15 +44,15 @@ const Ccomp: React.FC = () => {
   }, []);
 
   const totalPages = Math.ceil(cards.length / itemsPerPage);
-  const currentItems = cards.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+  const currentItems = useMemo(
+    () =>
+      cards.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage),
+    [cards, currentPage, itemsPerPage]
   );
 
-  const handleNextPage = () =>
-    currentPage < totalPages && setCurrentPage(currentPage + 1);
-  const handlePrevPage = () =>
-    currentPage > 1 && setCurrentPage(currentPage - 1);
+  const handlePageChange = (direction: "next" | "prev") => {
+    setCurrentPage((prev) => (direction === "next" ? prev + 1 : prev - 1));
+  };
 
   const handleBuyCard = async (cardName: string) => {
     if (!token) return toast.error("You must be logged in to purchase a card!");
@@ -81,7 +81,6 @@ const Ccomp: React.FC = () => {
 
   return (
     <div className="p-4 max-w-7xl mx-auto">
-      {/* Toast Notifications */}
       <ToastContainer position="top-right" autoClose={3000} />
 
       {error ? (
@@ -89,26 +88,25 @@ const Ccomp: React.FC = () => {
           <p>{error}</p>
         </div>
       ) : loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {Array.from({ length: itemsPerPage }).map((_, index) => (
             <div
               key={index}
               className="flex flex-col items-center bg-gray-100 p-4 rounded-lg shadow-md animate-pulse"
             >
-              <Skeleton height={160} width="100%" />
+              <Skeleton height={450} width="100%" />
             </div>
           ))}
         </div>
       ) : (
         <section>
-          {/* 6 Cards Per Row, 18 Cards Per Page */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {currentItems.map((image) => (
               <div
                 key={image.url}
-                className="bg-white p-2 rounded-lg shadow-lg hover:shadow-xl transition-transform transform hover:scale-105 relative"
+                className="bg-white p-1 rounded-lg shadow-lg hover:shadow-xl transition-transform transform hover:scale-105 relative"
               >
-                <div className="relative group w-full h-80 overflow-hidden rounded-md">
+                <div className="relative group w-full h-[600px] overflow-hidden rounded-md">
                   <img
                     src={image.url}
                     alt={image.name}
@@ -131,27 +129,29 @@ const Ccomp: React.FC = () => {
           </div>
 
           {/* Pagination Controls */}
-          <div className="flex justify-center items-center gap-4 mt-6">
-            <button
-              onClick={handlePrevPage}
-              disabled={currentPage === 1}
-              className="flex items-center gap-2 px-5 py-2 bg-gray-300 text-gray-700 rounded-full shadow-md hover:bg-gray-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <FaArrowLeft />
-              Prev
-            </button>
-            <span className="text-sm font-semibold bg-gray-100 px-6 py-3 rounded-full shadow-md">
-              Page {currentPage} of {totalPages}
-            </span>
-            <button
-              onClick={handleNextPage}
-              disabled={currentPage === totalPages}
-              className="flex items-center gap-2 px-5 py-2 bg-gray-300 text-gray-700 rounded-full shadow-md hover:bg-gray-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Next
-              <FaArrowRight />
-            </button>
-          </div>
+          {totalPages > 1 && (
+            <div className="flex justify-center items-center gap-4 mt-6">
+              <button
+                onClick={() => handlePageChange("prev")}
+                disabled={currentPage === 1}
+                className="flex items-center gap-2 px-5 py-2 bg-gray-300 text-gray-700 rounded-full shadow-md hover:bg-gray-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <FaArrowLeft />
+                Prev
+              </button>
+              <span className="text-sm font-semibold bg-gray-100 px-6 py-3 rounded-full shadow-md">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={() => handlePageChange("next")}
+                disabled={currentPage === totalPages}
+                className="flex items-center gap-2 px-5 py-2 bg-gray-300 text-gray-700 rounded-full shadow-md hover:bg-gray-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Next
+                <FaArrowRight />
+              </button>
+            </div>
+          )}
         </section>
       )}
     </div>
