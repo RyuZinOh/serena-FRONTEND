@@ -9,58 +9,50 @@ import HomeCard from "./HomeCard";
 /**
  * Hero Section Component
  */
-const HeroSection: React.FC<{ scrollY: number }> = ({ scrollY }) => {
-  return (
-    <div className="relative h-[700px] overflow-hidden bg-black">
-      {/* Skewed Overlay */}
-      <motion.div
-        className="absolute inset-0 bg-gradient-to-r from-black via-black to-yellow-400 transform -skew-x-12 -translate-x-1/4"
-        animate={{ y: scrollY * 0.3 }}
-        transition={{ ease: "easeOut", duration: 0.2 }}
-      ></motion.div>
+const HeroSection: React.FC<{ scrollY: number }> = ({ scrollY }) => (
+  <div className="relative h-[700px] overflow-hidden bg-black">
+    {/* Skewed Overlay */}
+    <motion.div
+      className="absolute inset-0 bg-gradient-to-r from-black via-black to-yellow-400 transform -skew-x-12 -translate-x-1/4"
+      animate={{ y: scrollY * 0.3 }}
+      transition={{ ease: "easeOut", duration: 0.2 }}
+    />
 
-      {/* Hero Content */}
-      <motion.div
-        className="absolute inset-0 flex items-center text-white pl-16"
-        animate={{ y: scrollY * 0.6 }}
-        transition={{ ease: "easeOut", duration: 0.2 }}
-      >
-        <div className="text-left max-w-2xl">
-          <h1 className="text-5xl font-bold mb-4">Welcome to Serena</h1>
-          <p className="text-xl mb-8">
-            Join the ultimate Pokémon platform for trainers to battle, trade,
-            and explore the world of Pokémon!
-          </p>
-          <Link
-            to="/appearance"
-            className="bg-yellow-400 text-black font-semibold py-3 px-8 rounded-full uppercase tracking-wide hover:bg-yellow-500 transition-all"
-          >
-            Get Started
-          </Link>
-        </div>
-      </motion.div>
-
-      {/* Hero Images with No Scroll Effects */}
-      <div className="absolute right-0 top-0 h-full w-1/2 flex items-center justify-end hidden md:flex">
-        <img
-          src="/assets/carousal_1.png"
-          alt="Carousal 1"
-          className="w-1/2 h-auto transform -skew-x-6 -rotate-6"
-        />
-        <img
-          src="/assets/carousal_2.png"
-          alt="Carousal 2"
-          className="w-1/2 h-auto transform rotate-0"
-        />
-        <img
-          src="/assets/carousal_3.png"
-          alt="Carousal 3"
-          className="w-1/2 h-auto transform skew-x-6 rotate-6"
-        />
+    {/* Hero Content */}
+    <motion.div
+      className="absolute inset-0 flex items-center text-white pl-16"
+      animate={{ y: scrollY * 0.6 }}
+      transition={{ ease: "easeOut", duration: 0.2 }}
+    >
+      <div className="text-left max-w-2xl">
+        <h1 className="text-5xl font-bold mb-4">Welcome to Serena</h1>
+        <p className="text-xl mb-8">
+          Join the ultimate Pokémon platform for trainers to battle, trade, and
+          explore the world of Pokémon!
+        </p>
+        <Link
+          to="/appearance"
+          className="bg-yellow-400 text-black font-semibold py-3 px-8 rounded-full uppercase tracking-wide hover:bg-yellow-500 transition-all"
+        >
+          Get Started
+        </Link>
       </div>
+    </motion.div>
+
+    {/* Hero Images (Carousel) */}
+    <div className="absolute right-0 top-0 h-full w-1/2 flex items-center justify-end hidden md:flex">
+      {[1, 2, 3].map((index) => (
+        <img
+          key={index}
+          src={`/assets/carousal_${index}.png`}
+          alt={`Carousal ${index}`}
+          className="w-1/3 h-auto transform -skew-x-6 -rotate-6"
+        />
+      ))}
     </div>
-  );
-};
+  </div>
+);
+
 /**
  * Trending Section Component
  */
@@ -94,9 +86,7 @@ const TrendingSection: React.FC = () => (
 const HomePage: React.FC = () => {
   const [scrollY, setScrollY] = useState(0);
 
-  const handleScroll = useCallback(() => {
-    setScrollY(window.scrollY);
-  }, []);
+  const handleScroll = useCallback(() => setScrollY(window.scrollY), []);
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);

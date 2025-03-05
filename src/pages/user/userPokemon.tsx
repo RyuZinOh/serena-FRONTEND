@@ -1,33 +1,31 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../../components/Layout/Layout";
-import UserMenu from "../../components/Layout/UserMenu";
+import UserMenu from "./UserMenu";
 import { FaBars, FaTimes, FaTrash } from "react-icons/fa";
-
 import axios from "axios";
 import useAuth from "../../context/useAuth";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+interface Pokemon {
+  _id: string;
+  pokemon: {
+    sprite: string;
+    name: string;
+    types: string[];
+    iv: {
+      attack: number;
+      defense: number;
+      hp: number;
+      special_attack: number;
+      special_defense: number;
+      speed: number;
+    };
+  };
+}
+
 const UserPokemon: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-
-  interface Pokemon {
-    _id: string;
-    pokemon: {
-      sprite: string;
-      name: string;
-      types: string[];
-      iv: {
-        attack: number;
-        defense: number;
-        hp: number;
-        special_attack: number;
-        special_defense: number;
-        speed: number;
-      };
-    };
-  }
-
   const [pokemonList, setPokemonList] = useState<Array<Pokemon>>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [auth] = useAuth();
@@ -43,10 +41,10 @@ const UserPokemon: React.FC = () => {
             },
           }
         );
-
         setPokemonList(response.data);
       } catch (error) {
         console.error("Error fetching user Pokémon data", error);
+        toast.error("Failed to fetch Pokémon data.");
       } finally {
         setLoading(false);
       }
@@ -75,6 +73,8 @@ const UserPokemon: React.FC = () => {
     }
   };
 
+  const toggleMenu = () => setIsMenuOpen((prev) => !prev);
+
   return (
     <Layout
       title="Your Pokémon - Serena"
@@ -84,33 +84,32 @@ const UserPokemon: React.FC = () => {
       viewport="width=device-width, initial-scale=1.0"
     >
       <div className="flex h-screen bg-white">
+        {/* Sidebar menu */}
         <div
-          className={`fixed top-0 left-0 text-white w-64 h-full transition-transform transform ${
+          className={`fixed inset-y-0 left-0 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
             isMenuOpen ? "translate-x-0" : "-translate-x-full"
-          } md:translate-x-0 md:relative md:w-90 overflow-hidden z-50 sm:z-50 md:z-40`}
+          } md:translate-x-0 md:relative z-50 md:z-0`} 
         >
           <button
-            className="md:hidden absolute top-4 right-4 text-black text-2xl"
-            onClick={() => setIsMenuOpen(false)}
+            className="md:hidden absolute top-4 right-4 text-gray-700 text-2xl hover:text-gray-900"
+            onClick={toggleMenu}
+            aria-label="Close menu"
           >
             <FaTimes />
           </button>
           <UserMenu />
         </div>
 
-        <div
-          className={`flex-1 p-1 overflow-hidden ${
-            isMenuOpen ? "overflow-hidden" : "overflow-auto"
-          }`}
-        >
-          <div className="block md:hidden mb-4">
-            <button
-              className="text-black text-xl"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              {isMenuOpen ? <FaTimes /> : <FaBars />}
-            </button>
-          </div>
+        {/* Main content */}
+        <div className="flex-1 p-6 overflow-auto">
+          {/* Mobile menu toggle button */}
+          <button
+            className="md:hidden text-gray-700 text-xl mb-4 hover:text-gray-900 z-40" 
+            onClick={toggleMenu}
+            aria-label="Open menu"
+          >
+            <FaBars />
+          </button>
 
           <h1 className="text-2xl font-semibold mb-4">Your Pokémon</h1>
           <div className="overflow-x-auto">
@@ -136,13 +135,19 @@ const UserPokemon: React.FC = () => {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={10} className="text-center">
+                    <td colSpan={10} className="text-center py-4">
                       Loading...
                     </td>
                   </tr>
+                ) : pokemonList.length === 0 ? (
+                  <tr>
+                    <td colSpan={10} className="text-center py-4">
+                      No Pokémon found.
+                    </td>
+                  </tr>
                 ) : (
-                  pokemonList.map((pokemon: Pokemon) => (
-                    <tr key={pokemon._id}>
+                  pokemonList.map((pokemon) => (
+                    <tr key={pokemon._id} className="hover:bg-gray-50">
                       <td className="py-2 px-4 border-b text-center">
                         <img
                           src={pokemon.pokemon.sprite}
@@ -176,8 +181,9 @@ const UserPokemon: React.FC = () => {
                       </td>
                       <td className="py-2 px-4 border-b text-center">
                         <button
-                          className="text-red-600 text-lg"
+                          className="text-red-600 hover:text-red-800 text-lg"
                           onClick={() => handleDelete(pokemon._id)}
+                          aria-label="Delete Pokémon"
                         >
                           <FaTrash />
                         </button>

@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Layout from "../../components/Layout/Layout";
-import UserMenu from "../../components/Layout/UserMenu";
+import UserMenu from "./UserMenu";
 import axios from "axios";
 import useAuth from "../../context/useAuth";
 import Cookies from "js-cookie";
 import { FaBars, FaTimes, FaSpinner } from "react-icons/fa";
-
 
 const Profile: React.FC = () => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
@@ -86,6 +85,8 @@ const Profile: React.FC = () => {
     setCookieConsent(true);
   };
 
+  const toggleMenu = () => setIsMenuOpen((prev) => !prev);
+
   return (
     <Layout
       title="Profile - Serena"
@@ -95,38 +96,34 @@ const Profile: React.FC = () => {
       viewport="width=device-width, initial-scale=1.0"
     >
       <div className="flex h-screen bg-white">
-        {/* Sidebar */}
+        {/* Sidebar menu */}
         <div
-          className={`fixed top-0 left-0 text-white h-full transition-transform transform ${
+          className={`fixed inset-y-0 left-0 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
             isMenuOpen ? "translate-x-0" : "-translate-x-full"
-          }  md:translate-x-0 md:relative md:w-90 overflow-hidden z-50 sm:z-50 md:z-40`}
+          } md:translate-x-0 md:relative z-50 md:z-0`} // High z-index in mobile, low in desktop
         >
           <button
-            className="md:hidden absolute top-4 right-4 text-black text-2xl"
-            onClick={() => setIsMenuOpen(false)}
+            className="md:hidden absolute top-4 right-4 text-gray-700 text-2xl hover:text-gray-900"
+            onClick={toggleMenu}
+            aria-label="Close menu"
           >
             <FaTimes />
           </button>
           <UserMenu />
         </div>
 
-        {/* Main Content */}
-        <div
-          className={`flex-1 p-6 ${
-            isMenuOpen ? "overflow-hidden" : "overflow-auto"
-          }`}
-        >
-          {/* Mobile Sidebar Toggle Button */}
-          <div className="block md:hidden mb-4">
-            <button
-              className="text-black text-xl"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              {isMenuOpen ? <FaTimes /> : <FaBars />}
-            </button>
-          </div>
+        {/* Main content */}
+        <div className="flex-1 p-6 overflow-auto">
+          {/* Mobile menu toggle button */}
+          <button
+            className="md:hidden text-gray-700 text-xl mb-4 hover:text-gray-900 z-40" // Lower z-index than sidebar in mobile
+            onClick={toggleMenu}
+            aria-label="Open menu"
+          >
+            <FaBars />
+          </button>
 
-          {/* Profile Content */}
+          {/* Profile content */}
           <h1 className="text-2xl font-semibold mb-4">User Profile</h1>
 
           {loading && !profileImage && !syncing ? (

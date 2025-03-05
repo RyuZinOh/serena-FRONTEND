@@ -1,30 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import useAuth from "../../context/useAuth";
+import useAuth from "../../context/useAuth"; 
 import { Menu, X } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
-import axios from "axios";
+import usePfp from "../../context/usepfp";
 
 const Header: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [profilePic, setProfilePic] = useState<string | null>(null);
   const navigate = useNavigate();
   const [auth, setAuth] = useAuth();
+  const { profilePic } = usePfp(); 
   const isLoggedIn = !!auth?.user;
   const username = auth?.user?.name || "User";
-
-  useEffect(() => {
-    if (auth.token) {
-      axios
-        .get(`${import.meta.env.VITE_API_BASE_URL}/user/mypfp`, {
-          headers: { Authorization: `${auth.token}` },
-          responseType: "blob",
-        })
-        .then((response) => setProfilePic(URL.createObjectURL(response.data)))
-        .catch(() => setProfilePic(null));
-    }
-  }, [auth.token]);
 
   const handleLogout = () => {
     localStorage.removeItem("auth");

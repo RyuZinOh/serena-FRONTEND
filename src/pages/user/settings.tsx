@@ -9,7 +9,7 @@ import {
 import Layout from "../../components/Layout/Layout";
 import { toast } from "react-toastify";
 import useAuth from "../../context/useAuth";
-import UserMenu from "../../components/Layout/UserMenu";
+import UserMenu from "./UserMenu";
 import axios from "axios";
 import { useDropzone } from "react-dropzone";
 
@@ -98,6 +98,8 @@ const Settings: React.FC = () => {
     },
   });
 
+  const toggleMenu = () => setIsMenuOpen((prev) => !prev);
+
   return (
     <Layout
       title="Profile Settings"
@@ -107,33 +109,32 @@ const Settings: React.FC = () => {
       viewport="width=device-width, initial-scale=1.0"
     >
       <div className="flex h-screen bg-gray-50">
+        {/* Sidebar menu */}
         <div
-          className={`fixed top-0 left-0 text-white w-64 h-full transition-transform transform ${
+          className={`fixed inset-y-0 left-0 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
             isMenuOpen ? "translate-x-0" : "-translate-x-full"
-          } md:translate-x-0 md:relative md:w-90 overflow-hidden z-50 sm:z-50 md:z-40`}
+          } md:translate-x-0 md:relative z-50 md:z-0`} // High z-index in mobile, low in desktop
         >
           <button
-            className="md:hidden absolute top-4 right-4 text-black text-2xl"
-            onClick={() => setIsMenuOpen(false)}
+            className="md:hidden absolute top-4 right-4 text-gray-700 text-2xl hover:text-gray-900"
+            onClick={toggleMenu}
+            aria-label="Close menu"
           >
             <FaTimes />
           </button>
           <UserMenu />
         </div>
 
-        <div
-          className={`flex-0 p-1 overflow-hidden ${
-            isMenuOpen ? "overflow-hidden" : "overflow-auto"
-          }`}
-        >
-          <div className="block md:hidden mb-4">
-            <button
-              className="text-black text-xl"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              {isMenuOpen ? <FaTimes /> : <FaBars />}
-            </button>
-          </div>
+        {/* Main content */}
+        <div className="flex-1 p-6 overflow-auto">
+          {/* Mobile menu toggle button */}
+          <button
+            className="md:hidden text-gray-700 text-xl mb-4 hover:text-gray-900 z-40" // Lower z-index than sidebar in mobile
+            onClick={toggleMenu}
+            aria-label="Open menu"
+          >
+            <FaBars />
+          </button>
 
           <h1 className="text-4xl font-semibold mb-8 text-gray-800">
             Profile Settings
@@ -152,6 +153,7 @@ const Settings: React.FC = () => {
             <p className="text-red-600 text-center font-medium">{error}</p>
           )}
 
+          {/* Profile picture upload section */}
           <div
             {...getRootProps()}
             className="flex flex-col items-center justify-center gap-6 p-8 border-4 border-dashed rounded-lg border-gray-300 bg-gray-50 transition duration-300 ease-in-out hover:border-blue-500 cursor-pointer"
@@ -183,6 +185,7 @@ const Settings: React.FC = () => {
               <input {...getInputProps()} />
             </div>
 
+            {/* Delete button */}
             <div className="flex gap-6">
               <button
                 onClick={handleDelete}

@@ -18,7 +18,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ManageUsers from "./pages/Admin/ManageUsers";
 import ManageReport from "./pages/Admin/ManageReport";
-import IncenseWar from "./pages/Global/InsenceWar";
+import IncenseWar from "./pages/Global/spawns/InsenceWar";
 import UserPokemon from "./pages/user/userPokemon";
 import Currency from "./pages/user/Currency";
 import TradeStatus from "./pages/user/TradeStatus";

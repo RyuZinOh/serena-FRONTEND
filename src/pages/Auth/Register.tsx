@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import {
   FaUser,
   FaEnvelope,
@@ -8,11 +8,11 @@ import {
   FaLock,
   FaHome,
   FaQuestionCircle,
+  FaSpinner,
 } from "react-icons/fa";
 import { toast } from "react-toastify";
 import axios from "axios";
 import Layout from "../../components/Layout/Layout";
-import { Link } from "react-router-dom";
 
 // RegisterFormInputs interface for form validation
 interface RegisterFormInputs {
@@ -31,18 +31,17 @@ const Register: React.FC = () => {
     formState: { errors },
   } = useForm<RegisterFormInputs>();
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate(); // Used for navigation
+  const navigate = useNavigate();
 
   const onSubmit: SubmitHandler<RegisterFormInputs> = async (data) => {
     setLoading(true);
     try {
-      // Using the API URL from the environment variable
       const response = await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}/user/register`,
         { ...data, role: 0 }
       );
       toast.success(response.data.message || "Registration successful!");
-      navigate("/"); // Navigate to the homepage after successful registration
+      navigate("/");
     } catch (error) {
       toast.error(
         axios.isAxiosError(error)
@@ -62,41 +61,46 @@ const Register: React.FC = () => {
       keywords="Register, Sign Up, Serena, Pokemon, Battle, Trade"
       viewport="width=device-width, initial-scale=1.0"
     >
-      <div className="flex justify-center items-center min-h-screen bg-gray-50 py-6 px-4 sm:px-6 lg:px-8">
-        <div className="w-full max-w-md space-y-8 bg-white bg-opacity-50 backdrop-blur-lg p-8 rounded-xl shadow-lg">
-          <h2 className="text-3xl font-extrabold text-gray-900 text-center">
-            Register
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-6 px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-md bg-white bg-opacity-90 backdrop-blur-lg p-8 rounded-xl shadow-2xl border border-gray-100">
+          <h2 className="text-3xl font-bold text-gray-900 text-center mb-8">
+            Create Your Account
           </h2>
-          <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
-            <div className="space-y-1">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            {/* Name Input */}
+            <div className="space-y-2">
               <div className="relative">
                 <FaUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
                   type="text"
                   placeholder="Full Name"
                   {...register("name", { required: "Name is required" })}
-                  className="appearance-none block w-full px-10 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-black sm:text-sm bg-transparent"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-black transition duration-200"
                 />
               </div>
               {errors.name && (
                 <p className="text-sm text-red-600">{errors.name.message}</p>
               )}
             </div>
-            <div className="space-y-1">
+
+            {/* Email Input */}
+            <div className="space-y-2">
               <div className="relative">
                 <FaEnvelope className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
                   type="email"
                   placeholder="Email Address"
                   {...register("email", { required: "Email is required" })}
-                  className="appearance-none block w-full px-10 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-black sm:text-sm bg-transparent"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-black transition duration-200"
                 />
               </div>
               {errors.email && (
                 <p className="text-sm text-red-600">{errors.email.message}</p>
               )}
             </div>
-            <div className="space-y-1">
+
+            {/* Password Input */}
+            <div className="space-y-2">
               <div className="relative">
                 <FaLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
@@ -109,7 +113,7 @@ const Register: React.FC = () => {
                       message: "Password must be at least 6 characters",
                     },
                   })}
-                  className="appearance-none block w-full px-10 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-black sm:text-sm bg-transparent"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-black transition duration-200"
                 />
               </div>
               {errors.password && (
@@ -118,7 +122,9 @@ const Register: React.FC = () => {
                 </p>
               )}
             </div>
-            <div className="space-y-1">
+
+            {/* Phone Input */}
+            <div className="space-y-2">
               <div className="relative">
                 <FaPhone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
@@ -127,50 +133,61 @@ const Register: React.FC = () => {
                   {...register("phone", {
                     required: "Phone number is required",
                   })}
-                  className="appearance-none block w-full px-10 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-black sm:text-sm bg-transparent"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-black transition duration-200"
                 />
               </div>
               {errors.phone && (
                 <p className="text-sm text-red-600">{errors.phone.message}</p>
               )}
             </div>
-            <div className="space-y-1">
+
+            {/* Address Input */}
+            <div className="space-y-2">
               <div className="relative">
                 <FaHome className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
                   type="text"
                   placeholder="Address"
                   {...register("address")}
-                  className="appearance-none block w-full px-10 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-black sm:text-sm bg-transparent"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-black transition duration-200"
                 />
               </div>
             </div>
-            <div className="space-y-1">
+
+            {/* Security Question Input */}
+            <div className="space-y-2">
               <div className="relative">
                 <FaQuestionCircle className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
                   type="text"
                   placeholder="Your Fav anime waifu?"
                   {...register("securityQues")}
-                  className="appearance-none block w-full px-10 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-black sm:text-sm bg-transparent"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-black transition duration-200"
                 />
               </div>
             </div>
+
+            {/* Register Button */}
             <button
               type="submit"
-              className="w-full py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-black hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 transition duration-200"
               disabled={loading}
+              className="w-full py-3 px-4 bg-black text-white rounded-lg shadow-md hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 transition duration-200 flex items-center justify-center"
             >
-              {loading ? "Registering..." : "Register"}
+              {loading ? (
+                <FaSpinner className="animate-spin mr-2" />
+              ) : (
+                "Register"
+              )}
             </button>
           </form>
 
+          {/* Login Link */}
           <div className="text-center mt-6">
             <p className="text-sm text-gray-600">
               Already have an account?{" "}
               <Link
                 to="/login"
-                className="text-black hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-black"
+                className="text-black font-medium hover:underline"
               >
                 Login here
               </Link>
