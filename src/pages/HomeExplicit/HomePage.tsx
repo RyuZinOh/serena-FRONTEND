@@ -80,68 +80,6 @@ const TrendingSection: React.FC = () => (
   </div>
 );
 
-/**
- * Upcoming Events Section
- */
-const UpcomingEventsSection: React.FC = () => (
-  <div className="container mx-auto px-4 py-8">
-    <h3 className="text-2xl font-bold text-gray-800 mb-8">Upcoming Events</h3>
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-      {[1, 2].map((index) => (
-        <div key={index} className="bg-white p-6 rounded-lg shadow-lg">
-          <h4 className="text-xl font-semibold mb-2">
-            Pokémon Battle Tournament
-          </h4>
-          <p className="text-gray-600">Date: November 15, 2023</p>
-          <p className="text-gray-600">Location: Online</p>
-          <button className="mt-4 bg-yellow-400 text-black font-semibold py-2 px-6 rounded-full uppercase tracking-wide hover:bg-yellow-500 transition-all">
-            Register Now
-          </button>
-        </div>
-      ))}
-    </div>
-  </div>
-);
-
-/**
- * Newsletter Signup Section
- */
-const NewsletterSection: React.FC = () => {
-  const [email, setEmail] = useState("");
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle newsletter subscription logic
-    console.log("Subscribed with email:", email);
-    setEmail(""); // Clear input after submission
-  };
-
-  return (
-    <div className="bg-yellow-400 py-8">
-      <div className="container mx-auto px-4 text-center">
-        <h3 className="text-2xl font-bold text-black mb-4">
-          Subscribe to Our Newsletter
-        </h3>
-        <form onSubmit={handleSubmit} className="flex justify-center">
-          <input
-            type="email"
-            placeholder="Enter your email"
-            className="py-2 px-4 rounded-l-full focus:outline-none"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <button
-            type="submit"
-            className="bg-black text-white py-2 px-6 rounded-r-full hover:bg-gray-800 transition-all"
-          >
-            Subscribe
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-};
 
 /**
  * Main HomePage Component
@@ -166,8 +104,6 @@ const HomePage: React.FC = () => {
     >
       <HeroSection scrollY={scrollY} />
       <TrendingSection />
-      <UpcomingEventsSection />
-      <NewsletterSection />
     </Layout>
   );
 };
