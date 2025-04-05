@@ -1,95 +1,159 @@
-import { useState, useEffect, useRef } from "react";
-import { io } from "socket.io-client";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { io, Socket } from "socket.io-client";
 import Layout from "../../components/Layout/Layout";
 import useAuth from "../../context/useAuth";
 import LoginRequired from "../LoginRequired";
-import { FaPaperPlane } from "react-icons/fa";
+import { FaPaperPlane, FaUsers } from "react-icons/fa";
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+}
+
+interface ConnectedUser {
+  id: string;
+  name: string;
+}
+
+interface ChatMessage {
+  text: string;
+  timestamp: string;
+  sender: string;
+  sender_id: string;
+}
+
+interface AuthState {
+  token?: string;
+  user: User | null;
+}
+
 const Botcommands = () => {
-  const [auth] = useAuth();
-  const [socket, setSocket] = useState<ReturnType<typeof io> | null>(null);
-  const [message, setMessage] = useState<string>("");
-  const [messages, setMessages] = useState<
-    { text: string; timestamp: string; sender: string }[]
-  >([]);
-  const [isAtBottom, setIsAtBottom] = useState(true);
+  const [auth] = useAuth() as [
+    AuthState,
+    React.Dispatch<React.SetStateAction<AuthState>>
+  ];
+  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [connectedUsers, setConnectedUsers] = useState<ConnectedUser[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const socketRef = useRef<Socket | null>(null);
+
+  const isCurrentUser = useCallback(
+    (userId: string) => auth.user?.id === userId,
+    [auth.user]
+  );
+
+  const handleNewMessage = useCallback((data: ChatMessage) => {
+    setMessages((prev) => [...prev, data]);
+  }, []);
+
+  const handleUserConnected = useCallback(
+    (data: {
+      user_id: string;
+      name: string;
+      connected_users: Record<string, string>;
+    }) => {
+      setConnectedUsers(
+        Object.entries(data.connected_users).map(([id, name]) => ({
+          id,
+          name,
+        }))
+      );
+    },
+    []
+  );
+
+  const handleUserDisconnected = useCallback(
+    (data: {
+      user_id: string;
+      name: string;
+      connected_users: Record<string, string>;
+    }) => {
+      setConnectedUsers(
+        Object.entries(data.connected_users).map(([id, name]) => ({
+          id,
+          name,
+        }))
+      );
+    },
+    []
+  );
+
+  const handleConnectedUsersList = useCallback(
+    (users: Record<string, string>) => {
+      setConnectedUsers(
+        Object.entries(users).map(([id, name]) => ({
+          id,
+          name,
+        }))
+      );
+    },
+    []
+  );
 
   useEffect(() => {
-    if (!auth?.token) return;
+    if (!auth.token) return;
 
     const socketConnection = io(baseUrl, {
       extraHeaders: { Authorization: `Bearer ${auth.token}` },
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+      autoConnect: true,
     });
 
-    setSocket(socketConnection);
+    socketRef.current = socketConnection;
 
-    socketConnection.on("message", (data) => {
-      setMessages((prevMessages) => [...prevMessages, data]);
-      new Audio("/assets/pop.mp3").play();
-    });
+    socketConnection.on("message", handleNewMessage);
+    socketConnection.on("user_connected", handleUserConnected);
+    socketConnection.on("user_disconnected", handleUserDisconnected);
+    socketConnection.on("connected_users_list", handleConnectedUsersList);
+    socketConnection.emit("get_connected_users");
 
     return () => {
       socketConnection.disconnect();
-      setSocket(null);
     };
-  }, [auth.token]);
+  }, [
+    auth.token,
+    handleNewMessage,
+    handleUserConnected,
+    handleUserDisconnected,
+    handleConnectedUsersList,
+  ]);
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (messagesEndRef.current) {
-        setIsAtBottom(
-          messagesEndRef.current.scrollTop +
-            messagesEndRef.current.clientHeight ===
-            messagesEndRef.current.scrollHeight
-        );
-      }
-    };
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
-    if (isAtBottom) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
-
-    const element = messagesEndRef.current;
-    if (element) {
-      element.addEventListener("scroll", handleScroll);
-    }
-
-    return () => {
-      element?.removeEventListener("scroll", handleScroll);
-    };
-  }, [isAtBottom, messages]);
-
-  const handleTyping = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setMessage(event.target.value);
-  };
-
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter" && message.trim()) {
-      handleSendMessage();
-    }
-  };
-
-  const handleSendMessage = () => {
-    if (socket && message.trim()) {
+  const handleMessageSubmit = () => {
+    if (socketRef.current && message.trim() && auth.user) {
       const timestamp = new Date().toLocaleTimeString("en-US", {
         hour: "numeric",
         minute: "numeric",
         hour12: true,
       });
-      socket.emit("message", {
+
+      socketRef.current.emit("message", {
         text: message.trim(),
         timestamp,
-        sender: auth?.user?.name,
+        sender: auth.user.name,
+        sender_id: auth.user.id,
       });
       setMessage("");
     }
-    setIsAtBottom(false);
   };
 
-  if (!auth?.token) {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleMessageSubmit();
+    }
+  };
+
+  if (!auth.token) {
     return <LoginRequired />;
   }
 
@@ -99,76 +163,116 @@ const Botcommands = () => {
       description="fire any bot commands and chat with other folks"
       author="Serena Team"
       keywords="pokemon, botcommands, chat"
-      viewport="width=device-width, initial-scale=1.0"
     >
-      <div className="min-h-screen bg-base-100 flex justify-center">
-        <div className="w-full max-w-7xl flex flex-col shadow-lg bg-base-200 rounded-lg">
-          {/* Header */}
-          <div className="p-4 bg-primary text-primary-content rounded-t-lg">
-            <h1 className="text-2xl font-bold text-center">Bot Commands</h1>
-          </div>
-
-          {/* Messages Container */}
-          <div
-            className="flex-1 p-4 space-y-4 overflow-y-auto bg-base-100"
-            ref={messagesEndRef}
-          >
-            {messages.map((msg, index) => (
+      <div className="flex h-screen bg-gray-100">
+        {/* Sidebar */}
+        <div className="w-64 bg-white border-r p-4 hidden md:block">
+          <h2 className="font-semibold text-lg mb-4 flex items-center gap-2">
+            <FaUsers className="text-gray-600" />
+            Online ({connectedUsers.length})
+          </h2>
+          <div className="space-y-2">
+            {connectedUsers.map((user) => (
               <div
-                key={index}
-                className={`flex items-start ${
-                  msg.sender === auth?.user?.name
-                    ? "justify-start"
-                    : "justify-end"
+                key={user.id}
+                className={`p-2 rounded flex items-center gap-2 ${
+                  isCurrentUser(user.id) ? "bg-gray-100" : "hover:bg-gray-50"
                 }`}
               >
-                <div
-                  className={`max-w-xs p-3 rounded-lg shadow-sm ${
-                    msg.sender === auth?.user?.name
-                      ? "bg-primary text-primary-content"
-                      : "bg-secondary text-secondary-content"
-                  }`}
-                >
-                  <span className="block text-xs text-opacity-50">
-                    {msg.timestamp}
-                  </span>
-                  <p className="mt-1 text-sm">
-                    <strong>{msg.sender}</strong> {msg.text}
-                  </p>
+                <div className="relative">
+                  <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-sm">
+                    {user.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border border-white"></div>
                 </div>
+                <span className={isCurrentUser(user.id) ? "font-medium" : ""}>
+                  {isCurrentUser(user.id) ? "You" : user.name}
+                </span>
               </div>
             ))}
           </div>
+        </div>
 
-          {/* Input Container */}
-          <div className="px-4 py-3 bg-base-100 shadow-md sticky bottom-0 border-t border-base-300 rounded-b-lg">
-            <div className="flex items-center">
+        {/* Main chat area */}
+        <div className="flex-1 flex flex-col">
+          {/* Header */}
+          <div className="bg-white border-b p-4">
+            <h1 className="font-semibold text-lg">Bot Commands</h1>
+            <p className="text-sm text-gray-500">
+              Chat with other users and use commands
+            </p>
+          </div>
+
+          {/* Messages */}
+          <div className="flex-1 p-4 overflow-y-auto">
+            {messages.length === 0 ? (
+              <div className="h-full flex items-center justify-center text-gray-500">
+                <div className="text-center">
+                  <FaPaperPlane className="mx-auto text-3xl mb-2" />
+                  <p>Start chatting by sending a message</p>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {messages.map((msg, i) => (
+                  <div
+                    key={i}
+                    className={`flex ${
+                      isCurrentUser(msg.sender_id)
+                        ? "justify-end"
+                        : "justify-start"
+                    }`}
+                  >
+                    <div
+                      className={`max-w-xs md:max-w-md rounded-lg p-3 ${
+                        isCurrentUser(msg.sender_id)
+                          ? "bg-black text-white"
+                          : "bg-white border"
+                      }`}
+                    >
+                      {!isCurrentUser(msg.sender_id) && (
+                        <p className="font-medium text-sm mb-1">{msg.sender}</p>
+                      )}
+                      <p className="whitespace-pre-wrap">{msg.text}</p>
+                      <p
+                        className={`text-xs mt-1 ${
+                          isCurrentUser(msg.sender_id)
+                            ? "text-gray-300"
+                            : "text-gray-500"
+                        }`}
+                      >
+                        {msg.timestamp}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+                <div ref={messagesEndRef} />
+              </div>
+            )}
+          </div>
+
+          {/* Input */}
+          <div className="bg-white border-t p-4">
+            <div className="flex gap-2">
               <input
                 type="text"
                 value={message}
-                onChange={handleTyping}
+                onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Type a message..."
-                className="flex-1 p-3 rounded-md bg-base-200 focus:outline-none"
-                style={{ border: "none" }}
-                disabled={!auth?.token}
+                placeholder="Type a message or command..."
+                className="flex-1 p-3 border rounded focus:outline-none focus:ring-1 focus:ring-black"
               />
-              {auth?.token && (
-                <button
-                  onClick={handleSendMessage}
-                  className="ml-3 p-3 bg-accent text-accent-content font-medium rounded-md hover:bg-accent-focus shadow-md transition-transform transform hover:scale-105 flex items-center justify-center"
-                >
-                  {message.trim() ? (
-                    <div className="flex space-x-1">
-                      <span className="dot"></span>
-                      <span className="dot"></span>
-                      <span className="dot"></span>
-                    </div>
-                  ) : (
-                    <FaPaperPlane />
-                  )}
-                </button>
-              )}
+              <button
+                onClick={handleMessageSubmit}
+                disabled={!message.trim()}
+                className={`p-3 rounded ${
+                  message.trim()
+                    ? "bg-black text-white hover:bg-gray-800"
+                    : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                }`}
+              >
+                <FaPaperPlane />
+              </button>
             </div>
           </div>
         </div>
