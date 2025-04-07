@@ -1,4 +1,4 @@
-// components/User/UserLayout.tsx
+// pages[component]->//User/UserLyout.tsx
 import React, { useState } from "react";
 import Layout from "../../components/Layout/Layout";
 import UserMenu from "./UserMenu";
