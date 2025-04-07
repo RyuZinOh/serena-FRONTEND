@@ -77,6 +77,9 @@ const App: React.FC = () => {
           <Route path="" element={<NoMatch />} />
         </Route>
 
+
+        
+
         {/* Auth Routes for Login, Register, and Forgot Password */}
         <Route element={<GuptaRoute />}>
           <Route path="/login" element={<Login />} />

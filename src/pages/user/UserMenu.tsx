@@ -59,12 +59,13 @@ const UserMenu: React.FC = () => {
   const getNavLinkClass = (isActive: boolean) =>
     `flex items-center p-2 rounded-lg text-sm font-medium transition-all duration-150 ease-in-out ${
       isActive
-        ? "bg-indigo-100 text-indigo-700"
-        : "hover:bg-indigo-50 text-gray-700"
+        ? "bg-gray-100 text-gray-700"
+        : "hover:bg-gray-100 text-gray-700"
     }`;
 
   return (
-    <div className="flex flex-col items-center bg-white text-gray-800 w-64 h-full p-6 shadow-lg rounded-xl">
+    <div className="flex flex-col items-center bg-white text-gray-800 w-64 h-full p-6  rounded-xl border border-gray-200">
+      {" "}
       {/* Profile Section */}
       <div className="flex flex-col items-center mb-6">
         <img
@@ -74,7 +75,6 @@ const UserMenu: React.FC = () => {
         />
         <span className="text-lg font-semibold truncate">{username}</span>
       </div>
-
       {/* Menu Items */}
       <div className="space-y-2 w-full">
         {menuItems.map((item) => (
@@ -88,7 +88,6 @@ const UserMenu: React.FC = () => {
           </NavLink>
         ))}
       </div>
-
       {/* Logout Button */}
       <div className="mt-auto w-full">
         <button
@@ -96,7 +95,7 @@ const UserMenu: React.FC = () => {
             localStorage.removeItem("auth");
             window.location.reload();
           }}
-          className="flex items-center justify-center p-3 w-full rounded-lg bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white font-semibold shadow-md hover:shadow-lg transition-all duration-200 ease-in-out"
+          className="flex items-center justify-center p-3 w-full rounded-lg bg-black text-white"
         >
           <AiOutlineLogout className="text-xl" />
           <span className="ml-3">Logout</span>
