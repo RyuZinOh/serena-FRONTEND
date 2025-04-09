@@ -4,15 +4,10 @@ import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import useAuth from "../../../context/useAuth";
+import { fetchBackgrounds, buyBackground, BackgroundImage } from "../../../Apis/kamehameha";
+
 
 const Bcomp: React.FC = () => {
-  interface BackgroundImage {
-    url: string;
-    name: string;
-    description: string;
-    price: string;
-  }
-
   const [authState] = useAuth();
   const [backgrounds, setBackgrounds] = useState<BackgroundImage[]>([]);
   const [loading, setLoading] = useState(true);
@@ -22,65 +17,47 @@ const Bcomp: React.FC = () => {
   const itemsPerPage = 6; // 2 cards per row, 3 rows per page
 
   useEffect(() => {
-    const fetchBackgrounds = async () => {
+    const loadBackgrounds = async () => {
       setLoading(true);
       try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_BASE_URL}/kamehameha/background`
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch backgrounds");
+        const { backgrounds, error } = await fetchBackgrounds();
+        if (error) {
+          setError(error);
+          toast.error("Failed to load backgrounds!");
+        } else {
+          setBackgrounds(backgrounds);
         }
-
-        const data = await response.json();
-        setBackgrounds(data.backgrounds);
-      } catch (err: unknown) {
-        setError(
-          err instanceof Error ? err.message : "An unknown error occurred"
-        );
-        toast.error("Failed to load backgrounds!");
-      } finally {
+      } 
+      finally {
         setLoading(false);
       }
     };
 
-    fetchBackgrounds();
+    loadBackgrounds();
   }, []);
 
   const handleBuyBackground = async (backgroundName: string) => {
+    if (!authState.token) {
+      toast.error("You need to login to buy banners!");
+      return;
+    }
+
     try {
-      const token = authState.token;
-      if (!token) {
-        toast.error("You need to login to buy banners!");
-        return;
-      }
-
-      const response = await fetch(
-        `${
-          import.meta.env.VITE_API_BASE_URL
-        }/kamehameha/buy_background/${backgroundName}`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
+      const { success, message } = await buyBackground(
+        backgroundName,
+        authState.token
       );
-
-      const result = await response.json();
-
-      if (response.ok) {
+      if (success) {
         toast.success(`Background "${backgroundName}" purchased successfully!`);
       } else {
-        toast.error(result.message || "Purchase failed!");
+        toast.error(message || "Purchase failed!");
       }
     } catch {
       toast.error("An error occurred during the purchase.");
     }
   };
 
+  // Rest of the component remains the same...
   const totalPages = Math.ceil(backgrounds.length / itemsPerPage);
   const currentItems = backgrounds.slice(
     (currentPage - 1) * itemsPerPage,

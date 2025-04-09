@@ -17,42 +17,50 @@ const HeroSection: React.FC<{ scrollY: number }> = ({ scrollY }) => (
       animate={{ y: scrollY * 0.3 }}
       transition={{ ease: "easeOut", duration: 0.2 }}
     />
-
     {/* Hero Content */}
     <motion.div
-      className="absolute inset-0 flex items-center text-white pl-16"
+      className="absolute inset-0 flex items-center text-white px-4 sm:px-16 "
       animate={{ y: scrollY * 0.6 }}
       transition={{ ease: "easeOut", duration: 0.2 }}
     >
-      <div className="text-left max-w-2xl">
-        <h1 className="text-5xl font-bold mb-4">Welcome to Serena</h1>
-        <p className="text-xl mb-8">
-          Join the ultimate Pokémon platform for trainers to battle, trade, and
-          explore the world of Pokémon!
+      <div className="text-left max-w-sm sm:max-w-lg lg:max-w-xl xl:max-w-2xl">
+        <h1 className="text-3xl sm:text-5xl font-bold mb-4">
+          Become a <span className="text-yellow-400">Pokémon Master</span>
+        </h1>
+        <p className="text-lg sm:text-xl mb-8">
+          Join thousands of trainers in the ultimate Pokémon platform for
+          battles, trading, and exploration across all regions!
         </p>
-        <Link
-          to="/appearance"
-          className="bg-yellow-400 text-black font-semibold py-3 px-8 rounded-full uppercase tracking-wide hover:bg-yellow-500 transition-all"
-        >
-          Get Started
-        </Link>
+        <div className="flex flex-wrap gap-4">
+          <Link
+            to="/appearance"
+            className="bg-yellow-400 text-black font-semibold py-2 px-6 sm:py-3 sm:px-8 rounded-full uppercase tracking-wide hover:bg-yellow-500 transition-all"
+          >
+            Start Your Journey
+          </Link>
+          <Link
+            to="/about"
+            className="border-2 border-white text-white font-semibold py-2 px-6 sm:py-3 sm:px-8 rounded-full uppercase tracking-wide hover:border-yellow-400 hover:text-yellow-400 transition-all"
+          >
+            Learn More
+          </Link>
+        </div>
       </div>
     </motion.div>
 
     {/* Hero Images (Carousel) */}
-    <div className="absolute right-0 top-0 h-full w-1/2 flex items-center justify-end hidden md:flex">
+    <div className="absolute right-12 top-0 h-full w-1/2 flex items-center justify-end hidden md:flex">
       {[1, 2, 3].map((index) => (
         <img
           key={index}
           src={`/assets/carousal_${index}.png`}
           alt={`Carousal ${index}`}
-          className="w-1/3 h-auto transform -skew-x-6 -rotate-6"
+          className="w-1/4 h-auto transform -skew-x-6 -rotate-4 transition-transform duration-500 hover:scale-105"
         />
       ))}
     </div>
   </div>
 );
-
 /**
  * Trending Section Component
  */
@@ -79,7 +87,6 @@ const TrendingSection: React.FC = () => (
     </div>
   </div>
 );
-
 
 /**
  * Main HomePage Component

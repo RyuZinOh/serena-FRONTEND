@@ -3,6 +3,7 @@ import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import useAuth from "../../../context/useAuth";
+import { fetchTitles, buyTitle, Title } from "../../../Apis/kamehameha"; 
 
 const Tcomp: React.FC = () => {
   const [authState] = useAuth();
@@ -10,66 +11,46 @@ const Tcomp: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const TITLES_PER_PAGE = 15; // Updated number of items per page
-
-  interface Title {
-    name: string;
-    price: number;
-  }
+  const TITLES_PER_PAGE = 15;
 
   useEffect(() => {
-    const fetchTitles = async () => {
+    const loadTitles = async () => {
       setLoading(true);
       try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_BASE_URL}/kamehameha/title`
-        );
-        if (!response.ok) throw new Error("Failed to fetch titles");
-
-        const data = await response.json();
-        setTitles(
-          data?.titles
-            ? Object.values(data.titles).map((value) => {
-                const [name, price] = value as [string, number];
-                return { name, price };
-              })
-            : []
-        );
+        const { titles, error } = await fetchTitles();
+        if (error) {
+          setError(error);
+          toast.error("Failed to load titles!");
+        } else {
+          setTitles(titles);
+        }
       } catch (err) {
         setError((err as Error)?.message || "An unknown error occurred");
       } finally {
         setLoading(false);
       }
     };
-    fetchTitles();
+    loadTitles();
   }, []);
 
   const handleBuyTitle = async (index: number) => {
     const token = authState.token;
-    if (!token) return toast.error("You must be logged in to buy a title.");
+    if (!token) {
+      toast.error("You must be logged in to buy a title.");
+      return;
+    }
 
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/kamehameha/buy_title/${
-          index + 1
-        }`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      const result = await response.json();
-      if (response.ok) {
-        toast.success(result.message || "Title purchased successfully!");
+      const { success, message } = await buyTitle(index, token);
+      if (success) {
+        toast.success(message || "Title purchased successfully!");
       } else {
-        toast.error(result.message || "Failed to purchase the title.");
+        toast.error(message || "Failed to purchase the title.");
       }
-    } catch {
-      toast.error("An error occurred while buying the title.");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "An unknown error occurred"
+      );
     }
   };
 
@@ -99,7 +80,6 @@ const Tcomp: React.FC = () => {
         <p className="text-center">Loading...</p>
       ) : (
         <section>
-          {/* Titles displayed in card format */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {currentTitles.length ? (
               currentTitles.map((title, idx) => (
@@ -130,9 +110,7 @@ const Tcomp: React.FC = () => {
             )}
           </div>
 
-          {/* Pagination Controls */}
           <div className="flex justify-center items-center gap-4 mt-8">
-            {/* Previous Button */}
             <button
               onClick={handlePrevPage}
               disabled={currentPage === 1}
@@ -142,12 +120,10 @@ const Tcomp: React.FC = () => {
               Prev
             </button>
 
-            {/* Page Number */}
             <span className="text-sm font-semibold bg-gray-100 px-4 py-2 rounded-full shadow-md">
               Page {currentPage} of {totalPages}
             </span>
 
-            {/* Next Button */}
             <button
               onClick={handleNextPage}
               disabled={currentPage === totalPages}

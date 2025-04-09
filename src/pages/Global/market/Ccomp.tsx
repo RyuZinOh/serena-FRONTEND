@@ -4,16 +4,10 @@ import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import useAuth from "../../../context/useAuth";
-
-interface Image {
-  url: string;
-  description: string;
-  price: number;
-  name: string;
-}
+import { fetchCards, buyCard, Card } from "../../../Apis/kamehameha"; 
 
 const Ccomp: React.FC = () => {
-  const [cards, setCards] = useState<Image[]>([]);
+  const [cards, setCards] = useState<Card[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -23,15 +17,16 @@ const Ccomp: React.FC = () => {
   const token = authState.token;
 
   useEffect(() => {
-    const fetchCards = async () => {
+    const loadCards = async () => {
       setLoading(true);
       try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_BASE_URL}/kamehameha/card`
-        );
-        if (!response.ok) throw new Error("Failed to fetch cards");
-        const data = await response.json();
-        setCards(data.cards);
+        const { cards, error } = await fetchCards();
+        if (error) {
+          setError(error);
+          toast.error("Failed to load cards!");
+        } else {
+          setCards(cards);
+        }
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "An unknown error occurred"
@@ -40,7 +35,7 @@ const Ccomp: React.FC = () => {
         setLoading(false);
       }
     };
-    fetchCards();
+    loadCards();
   }, []);
 
   const totalPages = Math.ceil(cards.length / itemsPerPage);
@@ -55,23 +50,18 @@ const Ccomp: React.FC = () => {
   };
 
   const handleBuyCard = async (cardName: string) => {
-    if (!token) return toast.error("You must be logged in to purchase a card!");
+    if (!token) {
+      toast.error("You must be logged in to purchase a card!");
+      return;
+    }
+
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/kamehameha/buy_card/${cardName}`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to purchase card.");
+      const { success, message } = await buyCard(cardName, token);
+      if (success) {
+        toast.success(message || "Card purchased successfully!");
+      } else {
+        toast.error(message || "Purchase failed!");
       }
-      toast.success("Card purchased successfully!");
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "An unknown error occurred"
